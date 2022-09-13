@@ -38,6 +38,7 @@ public class InventoryItem : MonoBehaviour
 
     public bool rotated = false;
 
+    public string itemName;
 
 
 
@@ -52,6 +53,8 @@ public class InventoryItem : MonoBehaviour
         size.x = itemData.width * ItemGrid.tileSizeWidth;
         size.y=itemData.height * ItemGrid.tileSizeHeight;
         GetComponent<RectTransform>().sizeDelta = size;
+
+        itemName = itemData.itemName;
     }
 
     internal void Rotate()

@@ -30,11 +30,13 @@ public class InventoryController : MonoBehaviour
     InventoryItem selectedItem; //현재 선택된 아이템 변수
     InventoryItem overlapItem; // 아이템을 바꿔줄때 잠시 넣어줄 변수
     RectTransform rectTransform; //아이템의 캔버스위치를 받아올 변수
+    RectTransform detailRectTrensform; // 아이템 디테일창을 위치를 미리찾아둘 변수
 
 
     [SerializeField] List<ItemData> items; //사용할 아이템 데이터
     [SerializeField] GameObject itemPrefab; //생성할 아이템의 프리펩
     [SerializeField] Transform canvasTransform; // 인벤토리를 보여줄 캔버스를 넣는 변수
+    [SerializeField] DetailInfo detailInfo; //아이템의 정보를 보여줄 스크립트
 
     Vector2Int oldPosition;
     InventoryItem itemToHighlight;
@@ -43,14 +45,15 @@ public class InventoryController : MonoBehaviour
     private void Awake()
     {
         inventoryHighlight=GetComponent<InventoryHighlight>();
+        detailRectTrensform = detailInfo.gameObject.GetComponent<RectTransform>();
     }
 
     private void Update()
     {
         ItemIconDrag();
-
+        DetailDrag();
         //들고있는 아이템이 없을때만 q를 눌렀을때 아이템생성
-        if(Keyboard.current.qKey.wasPressedThisFrame)
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             if (selectedItem == null)
             {
@@ -59,21 +62,22 @@ public class InventoryController : MonoBehaviour
         }
 
         //인벤토리의 빈칸에다가 아이템 넣기
-        if(Keyboard.current.wKey.wasPressedThisFrame)
+        if (Keyboard.current.wKey.wasPressedThisFrame)
         {
             InsertRandomItem();
         }
 
         //아이템 90도 돌리기 이미 돌려져 있다면 다시돌아옴
-        if(Keyboard.current.rKey.wasPressedThisFrame)
+        if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             RetateItem();
         }
 
         //선택한 아이템이 없다면 하이라이트 보여주지않음
-        if(selectedItemGrid == null)
+        if (selectedItemGrid == null)
         {
             inventoryHighlight.Show(false);
+            detailInfo.OnOff(false);
 
 
             return;
@@ -83,13 +87,49 @@ public class InventoryController : MonoBehaviour
 
         //마우스 왼쪽버튼 눌렀을때 행동
         //if (Input.GetMouseButtonDown(0))
-        if(Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             LeftMouseButtonPress();
 
         }
 
 
+    }
+
+    /// <summary>
+    /// detailInfo창을 움직이는함수
+    /// </summary>
+    private void DetailDrag()
+    {
+        if (detailInfo.gameObject.activeSelf)// detail창이 존재할때만
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue(); //마우스움직임받기
+            Vector2 pivotVector = new Vector2(-1.5f, -2f); // 기본 피봇위치
+
+            
+            RectTransform rect = (RectTransform)detailRectTrensform.transform; // detail창의 위치 저장
+            if ((mousePos.x + rect.sizeDelta.x * 3.0f) > Screen.width) //스크린옆으로 나갔을때
+            {
+                pivotVector.x = 2.5f;
+            }
+            if ((mousePos.y + rect.sizeDelta.y * 5.0f) > Screen.height) // 스크린위로 나갔을때
+            {
+                pivotVector.y = 3.0f;
+            }
+            // 피봇이 오른쪽아래로 되면 마우스로 설명을 가리기 때문에
+            // 그경우만 따로처리함
+            if (pivotVector.x == -1.5f && pivotVector.y == 3.0f) 
+            {
+                pivotVector.x = 2.5f;
+                pivotVector.y = 3.0f;
+            }
+
+
+            detailRectTrensform.pivot = pivotVector; //최종피봇설정
+            detailRectTrensform.transform.position = mousePos; // 마우스따라다니게 설정
+
+
+        }
     }
 
     /// <summary>
@@ -166,20 +206,25 @@ public class InventoryController : MonoBehaviour
         if (selectedItem == null) //들고있는 아이템이 없을때
         {
             itemToHighlight = selectedItemGrid.GetItem(positiononGrid.x, positiononGrid.y);
+            
 
             if(itemToHighlight!=null)
             {
                 inventoryHighlight.Show(true);
+                detailInfo.OnOff(true);
+                detailInfo.InfoSet(itemToHighlight);
 
                 inventoryHighlight.SetSize(itemToHighlight);
                 //inventoryHighlight.SetParent(selectedItemGrid);
                 inventoryHighlight.SetPosition(selectedItemGrid, itemToHighlight);
             }else
             {
+                detailInfo.OnOff(false);
                 inventoryHighlight.Show(false);
             }           
         }else //들고있는 아이템 있을때
         {
+            detailInfo.OnOff(false);
             //아이템이 들어가야할 자리에 하이라이트를 보여준다
             inventoryHighlight.Show(selectedItemGrid.BoundryCheck(positiononGrid.x,
                                                                    positiononGrid.y,
@@ -244,11 +289,16 @@ public class InventoryController : MonoBehaviour
         if (selectedItem == null)
         {
             PickUpItem(tileGridPosition);
+            Vector2Int positiononGrid = GetTileGridPosition();
+            inventoryHighlight.SetPosition(selectedItemGrid, selectedItem, positiononGrid.x, positiononGrid.y);
+            detailInfo.OnOff(false);
 
         }
         else
         {
+            
             PlaceItem(tileGridPosition);
+            
         }
     }
 
@@ -282,6 +332,8 @@ public class InventoryController : MonoBehaviour
         bool complete = selectedItemGrid.PlaceItem(selectedItem, tileGridPosition.x, tileGridPosition.y,ref overlapItem);
         if(complete)
         {
+            detailInfo.OnOff(true);
+            detailInfo.InfoSet(selectedItem);
             selectedItem = null;
             if(overlapItem!=null)
             {

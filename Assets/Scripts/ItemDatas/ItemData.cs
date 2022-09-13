@@ -13,4 +13,6 @@ public class ItemData : ScriptableObject
     public int height = 1;
 
     public Sprite itemIcon; //아이템의 스프라이트를 가지고 있을 변수
+
+    public string itemName;
 }
