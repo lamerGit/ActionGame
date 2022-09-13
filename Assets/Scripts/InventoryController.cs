@@ -104,25 +104,19 @@ public class InventoryController : MonoBehaviour
         if (detailInfo.gameObject.activeSelf)// detail창이 존재할때만
         {
             Vector2 mousePos = Mouse.current.position.ReadValue(); //마우스움직임받기
-            Vector2 pivotVector = new Vector2(-1.5f, -2f); // 기본 피봇위치
+            Vector2 pivotVector = new Vector2(-2.0f, -3.0f); // 기본 피봇위치
 
             
             RectTransform rect = (RectTransform)detailRectTrensform.transform; // detail창의 위치 저장
-            if ((mousePos.x + rect.sizeDelta.x * 3.0f) > Screen.width) //스크린옆으로 나갔을때
+            if ((mousePos.x + rect.sizeDelta.x * 3.5f) > Screen.width) //스크린옆으로 나갔을때
             {
-                pivotVector.x = 2.5f;
+                pivotVector.x = 3.0f;
             }
-            if ((mousePos.y + rect.sizeDelta.y * 5.0f) > Screen.height) // 스크린위로 나갔을때
+            if ((mousePos.y + rect.sizeDelta.y * 5.5f) > Screen.height) // 스크린위로 나갔을때
             {
                 pivotVector.y = 3.0f;
             }
-            // 피봇이 오른쪽아래로 되면 마우스로 설명을 가리기 때문에
-            // 그경우만 따로처리함
-            if (pivotVector.x == -1.5f && pivotVector.y == 3.0f) 
-            {
-                pivotVector.x = 2.5f;
-                pivotVector.y = 3.0f;
-            }
+            
 
 
             detailRectTrensform.pivot = pivotVector; //최종피봇설정
@@ -332,8 +326,8 @@ public class InventoryController : MonoBehaviour
         bool complete = selectedItemGrid.PlaceItem(selectedItem, tileGridPosition.x, tileGridPosition.y,ref overlapItem);
         if(complete)
         {
-            detailInfo.OnOff(true);
-            detailInfo.InfoSet(selectedItem);
+            detailInfo.OnOff(true); //디테일창 활성화
+            detailInfo.InfoSet(selectedItem); // 디테일창 정보 세팅
             selectedItem = null;
             if(overlapItem!=null)
             {
