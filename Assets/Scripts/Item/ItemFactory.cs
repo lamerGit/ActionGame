@@ -18,6 +18,7 @@ public class ItemFactory : MonoBehaviour
         obj.layer = LayerMask.NameToLayer("Item");
         SphereCollider col=obj.AddComponent<SphereCollider>();
         col.radius = 0.5f;
+        col.center = new Vector3(0, 1.0f, 0);
         col.isTrigger = true;
         itemCount++;
 

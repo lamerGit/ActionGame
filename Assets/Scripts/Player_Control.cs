@@ -10,7 +10,12 @@ public class Player_Control : MonoBehaviour
     PlayerInput inputActions;
     Player player;
     Vector3 lookDir;
-    Vector3 targetDir;
+    Vector3 targetPos;
+    Vector2 mousePos;
+
+    bool isLeftClick = false;
+
+    GameObject targetItem;
 
     private void Awake()
     {
@@ -23,11 +28,26 @@ public class Player_Control : MonoBehaviour
         player = GetComponent<Player>();
     }
 
+    private void FixedUpdate()
+    {
+        mousePos = Mouse.current.position.ReadValue();
+        if (isLeftClick)
+        {
+            mouseRay();
+            ItemRay();
+            player.MovePlayer(targetPos);
+            player.TurnPlayer(lookDir);
+
+        }
+        player.DistaceAcess(targetPos);
+
+    }
+
 
     private void OnEnable()
     {
         inputActions.Enable();
-        inputActions.Player.Look.performed += OnLook;
+        //inputActions.Player.Look.performed += OnLook;
         inputActions.Player.LeftClick.performed += OnLeftClick;
         inputActions.Player.LeftClick.canceled += OnLeftClick;
         
@@ -37,7 +57,7 @@ public class Player_Control : MonoBehaviour
     {
         inputActions.Player.LeftClick.canceled -= OnLeftClick;
         inputActions.Player.LeftClick.performed -= OnLeftClick;
-        inputActions.Player.Look.performed -= OnLook;
+        //inputActions.Player.Look.performed -= OnLook;
         inputActions.Disable();
     }
 
@@ -45,44 +65,64 @@ public class Player_Control : MonoBehaviour
     {
         if(obj.performed && !IsPointerOverUIObject())
         {
-            
-            player.CFXSet();
-            player.IsLeftClick = true;
+
+            mouseRay();
+            player.CFXSet(targetPos);
+            //player.IsLeftClick = true;
             player.DropItem();
+            isLeftClick = true;
 
             
         }else
         {
-            player.IsLeftClick = false;
+            isLeftClick = false;
+            //player.IsLeftClick = false;
 
         }
         
     }
 
-    private void OnLook(InputAction.CallbackContext obj)
+    /// <summary>
+    /// 레이를 통해 마우스가 땅을 클릭하는지 확인하는 함수
+    /// </summary>
+    private void mouseRay()
     {
-        Vector2 sceenPos = obj.ReadValue<Vector2>();
+        Vector2 sceenPos = mousePos;
         Ray ray = Camera.main.ScreenPointToRay(sceenPos);
         if (Physics.Raycast(ray, out RaycastHit hit, 1000.0f, LayerMask.GetMask("Ground")))
         {
-            targetDir = hit.point;
+            targetPos = hit.point;
+
             lookDir = hit.point - player.transform.position;
             lookDir.y = 0.0f;
             lookDir = lookDir.normalized;
 
-
-            player.TargetSet(targetDir);
-            player.LookSet(lookDir);
-
-
-
         }
+    }
+
+    /// <summary>
+    /// 레이를 통해 아이템을 선택하는 함수
+    /// </summary>
+    private void ItemRay()
+    {
+        Vector2 sceenPos = mousePos;
+        Ray ray = Camera.main.ScreenPointToRay(sceenPos);
         if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
         {
-            player.TargetItemSet(hitItem.transform.gameObject);
+            //player.PickUpItem(hitItem.transform.gameObject);
+            hitItem.transform.gameObject.GetComponent<Item>().OutlineOn();
+            player.TargetItem = hitItem.transform.gameObject;
 
 
+        }else
+        {
+            player.TargetItem = null;
         }
+    }
+
+    private void OnLook(InputAction.CallbackContext obj)
+    {
+       
 
     }
 
@@ -94,7 +134,7 @@ public class Player_Control : MonoBehaviour
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
 
-        eventDataCurrentPosition.position = new Vector2(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y);
+        eventDataCurrentPosition.position = mousePos;
 
         List<RaycastResult> results = new List<RaycastResult>();
 

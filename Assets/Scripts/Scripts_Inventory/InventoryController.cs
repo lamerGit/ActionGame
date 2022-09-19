@@ -25,6 +25,17 @@ public class InventoryController : MonoBehaviour
         }
     }
 
+    public EquipSlot selectedEquipSlot;
+
+    public EquipSlot SelectedEquipSlot
+    {
+        get => selectedEquipSlot;
+        set
+        {
+            selectedEquipSlot = value;
+        }
+    }
+
 
 
     InventoryItem selectedItem; //현재 선택된 아이템 변수
@@ -45,7 +56,7 @@ public class InventoryController : MonoBehaviour
     PlayerInput inputActions;
 
     FindPlayerInventory playerInventory;
-
+    EquipControl playerEquipControl;
 
 
     public InventoryItem SelectedItem
@@ -59,6 +70,7 @@ public class InventoryController : MonoBehaviour
         inventoryHighlight=GetComponent<InventoryHighlight>();
         detailRectTrensform = detailInfo.gameObject.GetComponent<RectTransform>();
         playerInventory=FindObjectOfType<FindPlayerInventory>();
+        playerEquipControl=FindObjectOfType<EquipControl>();
     }
 
     private void OnEnable()
@@ -88,6 +100,11 @@ public class InventoryController : MonoBehaviour
         {
             selectedItemGrid = null;
         }
+        if (!playerEquipControl.OnOff())
+        {
+
+        }
+
         
     }
 
@@ -117,7 +134,7 @@ public class InventoryController : MonoBehaviour
     private void OnLeftClick(InputAction.CallbackContext obj)
     {
         //인벤토리가 켜져있을때만 실행
-        if (selectedItemGrid != null)
+        if (selectedItemGrid != null || selectedEquipSlot!=null)
         {
             LeftMouseButtonPress();
         }
@@ -127,9 +144,19 @@ public class InventoryController : MonoBehaviour
     {
         ItemIconDrag();
         DetailDrag();
-       
+
+        if (selectedEquipSlot != null)
+        {
+            if (selectedEquipSlot.SlotItem != null && selectedItem==null)
+            {
+                detailInfo.OnOff(true);
+                detailInfo.InfoSet(selectedEquipSlot.SlotItem);
+            }
+
+
+        }
         //선택한 아이템이 없다면 하이라이트 보여주지않음
-        if (selectedItemGrid == null)
+        if (selectedItemGrid == null && selectedEquipSlot==null)
         {
             inventoryHighlight.Show(false);
             detailInfo.OnOff(false);
@@ -138,7 +165,17 @@ public class InventoryController : MonoBehaviour
             return;
         }
 
-        HandleHighlight();
+        if (selectedItemGrid != null)
+        {
+            HandleHighlight();
+        }
+        
+
+        
+
+     
+
+        
 
 
     }
@@ -383,20 +420,43 @@ public class InventoryController : MonoBehaviour
     /// </summary>
     private void LeftMouseButtonPress()
     {
-        Vector2Int tileGridPosition = GetTileGridPosition();
+
+        
         //Debug.Log($"{tileGridPosition.x},{tileGridPosition.y}");
-        if (selectedItem == null)
+        if (selectedItem == null && selectedItemGrid != null)
         {
+            Vector2Int tileGridPosition = GetTileGridPosition();
             PickUpItem(tileGridPosition);
             Vector2Int positiononGrid = GetTileGridPosition();
             inventoryHighlight.SetPosition(selectedItemGrid, selectedItem, positiononGrid.x, positiononGrid.y);
             detailInfo.OnOff(false);
 
         }
-        else
+        else if (selectedItem != null && selectedItemGrid != null)
         {
-            
+            Vector2Int tileGridPosition = GetTileGridPosition();
             PlaceItem(tileGridPosition);
+
+        }
+
+        if (selectedEquipSlot!=null)
+        {
+            if(selectedEquipSlot.SlotItem==null && selectedItem!=null)
+            {
+                selectedEquipSlot.PlaceItem(selectedItem);
+                selectedItem = null;
+            }else if(selectedEquipSlot.SlotItem!=null && selectedItem==null)
+            {
+                Vector2 pivot = new Vector2(0, 1.0f);
+                selectedItem = selectedEquipSlot.SlotItem;
+                rectTransform=selectedItem.GetComponent<RectTransform>();
+                rectTransform.SetParent(playerInventory.transform);
+                rectTransform.pivot = pivot;
+                rectTransform.anchorMax= pivot;
+                rectTransform.anchorMin = pivot;
+                rectTransform.SetAsLastSibling();
+                selectedEquipSlot.SlotItem = null;
+            }
             
         }
     }

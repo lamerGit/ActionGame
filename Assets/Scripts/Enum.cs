@@ -9,3 +9,10 @@ public enum ItemIDCode
     Armor,
     Potion
 }
+
+public enum EquipType
+{
+    LeftHand=0,
+    RightHand,
+    Armor
+}

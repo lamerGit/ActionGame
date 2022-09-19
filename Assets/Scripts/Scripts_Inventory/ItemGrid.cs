@@ -7,8 +7,8 @@ public class ItemGrid : MonoBehaviour
 {
     ///아이템 인벤토리 메인 스크립트 여기서 만들고 InventroyController에서 사용한다.
 
-    public const float tileSizeWidth = 64; //타일의 가로
-    public const float tileSizeHeight = 64; // 타일의 높이
+    public const float tileSizeWidth = 64; //타일의 1개의 가로
+    public const float tileSizeHeight = 64; // 타일의 1개의 높이
 
     InventoryItem[,] inventoryItemSlot; // 아이템 정보를 저장할 배열
 

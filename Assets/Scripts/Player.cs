@@ -35,6 +35,22 @@ public class Player : MonoBehaviour
     InventoryController inventoryController;
 
     float pickUpRange = 3.0f;
+
+
+    /// <summary>
+    /// 현재 내가 선택한 아이템
+    /// </summary>
+    public GameObject TargetItem
+    {
+        get { return targetItem; }
+        set {
+            //자신말고 다른아이템을 선택했을때 아웃라인 해제
+            if (targetItem != null && targetItem!=value)
+            {
+                targetItem.GetComponent<Item>().OutlineOff();
+            }
+            targetItem = value; }
+    }
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -45,86 +61,86 @@ public class Player : MonoBehaviour
         inventoryController = FindObjectOfType<InventoryController>();
     }
 
-    private void FixedUpdate()
+    /// <summary>
+    /// 아이템을 줍는 함수
+    /// 일정거리에 들어와야 줍는다.
+    /// </summary>
+    /// <param name="t">Player_Control스크립트에서 피킹된 Item레이어를 가진 게임오브젝트를 받는다</param>
+    private void PickUpItem(GameObject t)
     {
-        
-        DistaceCFX();
-        if(IsLeftClick)
+        float d = (t.transform.position - transform.position).sqrMagnitude;
+        ItemData itemdata = t.GetComponent<Item>().data;
+
+        if (d < pickUpRange * pickUpRange)
         {
-            TurnPlayer();
-            MovePlayer();
-            if(targetItem!=null)
+            if (inventoryController.PickUpItem(itemdata.itemID, playerInventory))
             {
-                float d = (targetItem.transform.position - transform.position).sqrMagnitude;
-                ItemData itemdata = targetItem.GetComponent<Item>().data;
 
-                if (d < pickUpRange * pickUpRange)
-                {
-                    if (inventoryController.PickUpItem(itemdata.itemID, playerInventory))
-                    {
+                Destroy(t);
 
-                        Destroy(targetItem);
-
-
-                    }
-                }
 
             }
         }
     }
-
-    private void MovePlayer()
+    /// <summary>
+    /// 플레이어 이동함수 네브메쉬를 통해 움직인다.
+    /// </summary>
+    /// <param name="v">Player_Control에서 움직임을 받아온다</param>
+    public void MovePlayer(Vector3 v)
     {
-        goalVector = targetVector;
-        agent.SetDestination(goalVector);
+        
+        agent.SetDestination(v);
         isMoving = true;
         animator.SetBool("isMove", isMoving);
     }
 
-    private void DistaceCFX()
+    /// <summary>
+    /// 목표위치 근처로 가면 실행되는 함수
+    /// </summary>
+    /// <param name="v">목표지점을 받는다.</param>
+    public void DistaceAcess(Vector3 v)
     {
-        float distance = (goalVector - transform.position).sqrMagnitude;
-        
-        if (distance < distanceRange*distanceRange)
+        float distance = (v - transform.position).sqrMagnitude;
+
+        if (distance < distanceRange * distanceRange)
         {
+            if(TargetItem!=null)
+            {
+                PickUpItem(TargetItem);
+                TargetItem = null;
+            }
+
             isMoving = false;
             animator.SetBool("isMove", isMoving);
         }
     }
 
-    private void TurnPlayer()
+    /// <summary>
+    /// 플레이어 회전함수
+    /// </summary>
+    /// <param name="v">봐야하는 방향</param>
+    public void TurnPlayer(Vector3 v)
     {
-        if (lookDir != Vector3.zero)
+        if (v != Vector3.zero)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookDir), Time.deltaTime * turnSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(v), Time.deltaTime * turnSpeed);
         }
     }
 
-    public void LookSet(Vector3 v)
+    /// <summary>
+    /// 가야하는 곳을 표시해주는 함수
+    /// </summary>
+    /// <param name="t">목표지점</param>
+    public void CFXSet(Vector3 t)
     {
-        lookDir = v;
-       
-    }
-
-    public void TargetSet(Vector3 t)
-    {
-
-        targetVector = t;
-
-    }
-
-    public void CFXSet()
-    {
-        Vector3 cfxVector = targetVector;
+        Vector3 cfxVector = t;
         cfxVector.y = 0.8f;
         Instantiate(targetCFX, cfxVector,targetCFX.transform.rotation);
     }
 
-    public void TargetItemSet(GameObject t)
-    {
-        targetItem = t;
-    }
-
+    /// <summary>
+    /// 아이템을 버리는 함수
+    /// </summary>
     public void DropItem()
     {
         if (inventoryController.SelectedItem != null)
