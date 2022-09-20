@@ -385,6 +385,7 @@ public class InventoryController : MonoBehaviour
             }else
             {
                 playerInventory.OnInventory();
+                playerEquipControl.OnInventory();
             }
           
             result = true;
@@ -441,24 +442,50 @@ public class InventoryController : MonoBehaviour
 
         if (selectedEquipSlot!=null)
         {
-            if(selectedEquipSlot.SlotItem==null && selectedItem!=null)
+            if (selectedEquipSlot.SlotItem == null && selectedItem != null) //장비슬롯에 아이템이없고 아이템을 들고있을때
             {
-                selectedEquipSlot.PlaceItem(selectedItem);
-                selectedItem = null;
-            }else if(selectedEquipSlot.SlotItem!=null && selectedItem==null)
+                if (selectedEquipSlot.PlaceItem(selectedItem))
+                {
+                    selectedItem = null;
+                }
+            } else if (selectedEquipSlot.SlotItem != null && selectedItem == null) // 장비슬롯에 아이템이있고 들고있는 아이템이 없을때
             {
-                Vector2 pivot = new Vector2(0, 1.0f);
-                selectedItem = selectedEquipSlot.SlotItem;
-                rectTransform=selectedItem.GetComponent<RectTransform>();
-                rectTransform.SetParent(playerInventory.transform);
-                rectTransform.pivot = pivot;
-                rectTransform.anchorMax= pivot;
-                rectTransform.anchorMin = pivot;
-                rectTransform.SetAsLastSibling();
+                InventoryItem tempSlotItem = selectedEquipSlot.SlotItem;
+                EquipSlotPlaceItem(tempSlotItem);
                 selectedEquipSlot.SlotItem = null;
+            }
+            else if (selectedEquipSlot.SlotItem != null && selectedItem != null) // 장비슬롯에 아이템이있고 들고있는 아이템이 있을때
+            {
+                InventoryItem tempSlotItem = selectedEquipSlot.SlotItem;
+                if(selectedEquipSlot.PlaceItem(selectedItem))
+                {
+                    //Debug.Log("성공");
+                    EquipSlotPlaceItem(tempSlotItem);
+                 
+                }else
+                {
+                    //Debug.Log("실패");
+                }
+                //EquipSlotPlaceItem();
+                
+
+                
+                
             }
             
         }
+    }
+
+    private void EquipSlotPlaceItem(InventoryItem slotItem)
+    {
+        Vector2 pivot = new Vector2(0, 1.0f);
+        selectedItem = slotItem;
+        rectTransform = selectedItem.GetComponent<RectTransform>();
+        rectTransform.SetParent(playerInventory.transform);
+        rectTransform.pivot = pivot;
+        rectTransform.anchorMax = pivot;
+        rectTransform.anchorMin = pivot;
+        rectTransform.SetAsLastSibling();
     }
 
     /// <summary>

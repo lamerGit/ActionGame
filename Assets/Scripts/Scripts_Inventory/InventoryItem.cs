@@ -32,6 +32,14 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
+    public EquipType EQUIPTYPE
+    {
+        get
+        {
+            return itemData.equipType;
+        }
+    }
+
 
     public int onGridPositionX;
     public int onGridPositionY;

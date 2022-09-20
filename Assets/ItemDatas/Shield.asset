@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37ab3547a2eeb224ca42f4f9d40eaba6, type: 3}
-  m_Name: IronArmor
+  m_Name: Shield
   m_EditorClassIdentifier: 
-  width: 3
-  height: 3
-  itemIcon: {fileID: 21300000, guid: 567fdd2e557fefc478f8aaa7ae56fb11, type: 3}
-  itemName: "\uC544\uC774\uC5B8\uC544\uBA38"
-  itemPrefab: {fileID: 7312197946636707060, guid: d74c62281c5532643ab8576ff26efca5, type: 3}
-  itemID: 2
-  equipType: 2
+  width: 2
+  height: 2
+  itemIcon: {fileID: 21300000, guid: 615f3cdaa1374bd4db14286066f31cde, type: 3}
+  itemName: "\uBC29\uD328"
+  itemPrefab: {fileID: 7715749130160017982, guid: 06e05a09af268ee4b893dcaab038fbcc, type: 3}
+  itemID: 4
+  equipType: 1

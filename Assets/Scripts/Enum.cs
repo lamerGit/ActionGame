@@ -7,12 +7,14 @@ public enum ItemIDCode
     Diamond=0,
     Sword,
     Armor,
-    Potion
+    Potion,
+    Shield
 }
 
 public enum EquipType
 {
     LeftHand=0,
     RightHand,
-    Armor
+    Armor,
+    None
 }

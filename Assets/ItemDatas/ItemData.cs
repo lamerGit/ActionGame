@@ -19,4 +19,6 @@ public class ItemData : ScriptableObject
     public GameObject itemPrefab;
 
     public uint itemID = 0;
+
+    public EquipType equipType = EquipType.None;
 }
