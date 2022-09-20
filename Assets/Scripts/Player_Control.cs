@@ -15,7 +15,7 @@ public class Player_Control : MonoBehaviour
 
     bool isLeftClick = false;
 
-    GameObject targetItem;
+    GameObject rayTarget = null;
 
     private void Awake()
     {
@@ -31,10 +31,11 @@ public class Player_Control : MonoBehaviour
     private void FixedUpdate()
     {
         mousePos = Mouse.current.position.ReadValue();
+        RayTarget();
         if (isLeftClick)
         {
             mouseRay();
-            ItemRay();
+         
             player.MovePlayer(targetPos);
             player.TurnPlayer(lookDir);
 
@@ -68,16 +69,14 @@ public class Player_Control : MonoBehaviour
 
             mouseRay();
             player.CFXSet(targetPos);
-            //player.IsLeftClick = true;
             player.DropItem();
             isLeftClick = true;
-
+           
             
         }else
         {
             isLeftClick = false;
-            //player.IsLeftClick = false;
-
+     
         }
         
     }
@@ -96,27 +95,34 @@ public class Player_Control : MonoBehaviour
             lookDir = hit.point - player.transform.position;
             lookDir.y = 0.0f;
             lookDir = lookDir.normalized;
-
+            player.Target = rayTarget;
         }
+        
+
     }
 
     /// <summary>
     /// 레이를 통해 아이템을 선택하는 함수
     /// </summary>
-    private void ItemRay()
+    private void RayTarget()
     {
+        if (rayTarget != null)
+        {
+            
+           rayTarget.GetComponent<OutlineController>().OutlineOff();
+            
+        }
         Vector2 sceenPos = mousePos;
         Ray ray = Camera.main.ScreenPointToRay(sceenPos);
         if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
         {
             //player.PickUpItem(hitItem.transform.gameObject);
-            hitItem.transform.gameObject.GetComponent<Item>().OutlineOn();
-            player.TargetItem = hitItem.transform.gameObject;
-
-
+            rayTarget= hitItem.transform.gameObject;
+            rayTarget.GetComponent<OutlineController>().OutlineOn();
+            //player.TargetItem = hitItem.transform.gameObject;
         }else
         {
-            player.TargetItem = null;
+            rayTarget= null;
         }
     }
 

@@ -15,7 +15,7 @@ MonoBehaviour:
   width: 2
   height: 3
   itemIcon: {fileID: 21300000, guid: 8f28955d92038974a9b04aafaeea79b0, type: 3}
-  itemName: "\uCE7C"
+  itemName: "\uC544\uC774\uC5B8\uC18C\uB4DC"
   itemPrefab: {fileID: 7630915473911777713, guid: 653ad9129058d034a9c66c8ba2c78d80, type: 3}
   itemID: 1
   equipType: 0

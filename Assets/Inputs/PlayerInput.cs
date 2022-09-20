@@ -178,6 +178,34 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""GameManager"",
+            ""id"": ""d45ce9ac-a597-4f70-b106-9ef93654099b"",
+            ""actions"": [
+                {
+                    ""name"": ""ItemNameOnOff"",
+                    ""type"": ""Button"",
+                    ""id"": ""d06366f9-4b75-4fda-b905-8617f9807fd4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""02e0b7f4-fdfb-40ab-8e42-c4c8636f444f"",
+                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ItemNameOnOff"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -254,6 +282,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_InventoryUI_CreateEmptyItem = m_InventoryUI.FindAction("CreateEmptyItem", throwIfNotFound: true);
         m_InventoryUI_ItemRotate = m_InventoryUI.FindAction("ItemRotate", throwIfNotFound: true);
         m_InventoryUI_LeftClick = m_InventoryUI.FindAction("LeftClick", throwIfNotFound: true);
+        // GameManager
+        m_GameManager = asset.FindActionMap("GameManager", throwIfNotFound: true);
+        m_GameManager_ItemNameOnOff = m_GameManager.FindAction("ItemNameOnOff", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -415,6 +446,39 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         }
     }
     public InventoryUIActions @InventoryUI => new InventoryUIActions(this);
+
+    // GameManager
+    private readonly InputActionMap m_GameManager;
+    private IGameManagerActions m_GameManagerActionsCallbackInterface;
+    private readonly InputAction m_GameManager_ItemNameOnOff;
+    public struct GameManagerActions
+    {
+        private @PlayerInput m_Wrapper;
+        public GameManagerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ItemNameOnOff => m_Wrapper.m_GameManager_ItemNameOnOff;
+        public InputActionMap Get() { return m_Wrapper.m_GameManager; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GameManagerActions set) { return set.Get(); }
+        public void SetCallbacks(IGameManagerActions instance)
+        {
+            if (m_Wrapper.m_GameManagerActionsCallbackInterface != null)
+            {
+                @ItemNameOnOff.started -= m_Wrapper.m_GameManagerActionsCallbackInterface.OnItemNameOnOff;
+                @ItemNameOnOff.performed -= m_Wrapper.m_GameManagerActionsCallbackInterface.OnItemNameOnOff;
+                @ItemNameOnOff.canceled -= m_Wrapper.m_GameManagerActionsCallbackInterface.OnItemNameOnOff;
+            }
+            m_Wrapper.m_GameManagerActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @ItemNameOnOff.started += instance.OnItemNameOnOff;
+                @ItemNameOnOff.performed += instance.OnItemNameOnOff;
+                @ItemNameOnOff.canceled += instance.OnItemNameOnOff;
+            }
+        }
+    }
+    public GameManagerActions @GameManager => new GameManagerActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -472,5 +536,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnCreateEmptyItem(InputAction.CallbackContext context);
         void OnItemRotate(InputAction.CallbackContext context);
         void OnLeftClick(InputAction.CallbackContext context);
+    }
+    public interface IGameManagerActions
+    {
+        void OnItemNameOnOff(InputAction.CallbackContext context);
     }
 }

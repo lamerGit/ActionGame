@@ -99,6 +99,7 @@ public class InventoryController : MonoBehaviour
         if(!playerInventory.OnOff())
         {
             selectedItemGrid = null;
+            detailInfo.OnOff(false);
         }
         if (!playerEquipControl.OnOff())
         {

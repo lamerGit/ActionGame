@@ -1,37 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Item : MonoBehaviour
 {
     public ItemData data;
-    Transform[] allChildren;
+
     private void Start()
     {
         Instantiate(data.itemPrefab,transform.position,transform.rotation,transform);
-        allChildren = GetComponentsInChildren<Transform>();
-     
+
     }
 
-    public void OutlineOn()
+    public void NameOn()
     {
-  
-
-        for(int i = 1; i < allChildren.Length; i++)
-        {
-            allChildren[i].gameObject.layer = LayerMask.NameToLayer("Outline");
-            //Debug.Log(child.name);
-        }
-
+        transform.GetChild(0).transform.Find("ItemName").gameObject.SetActive(true);
     }
 
-    public void OutlineOff()
+    public void NameOff()
     {
-
-        for (int i = 1; i < allChildren.Length; i++)
-        {
-            allChildren[i].gameObject.layer = LayerMask.NameToLayer("Default");
-            //Debug.Log(child.name);
-        }
+        transform.GetChild(0).transform.Find("ItemName").gameObject.SetActive(false);
     }
+
+
 }

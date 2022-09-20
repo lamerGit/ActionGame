@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     }
 
 
-    GameObject targetItem=null;
+    GameObject target=null;
     ItemGrid playerInventory;
     InventoryController inventoryController;
 
@@ -40,16 +40,16 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 현재 내가 선택한 아이템
     /// </summary>
-    public GameObject TargetItem
+    public GameObject Target
     {
-        get { return targetItem; }
-        set {
+        get { return target; }
+        set
+        {
             //자신말고 다른아이템을 선택했을때 아웃라인 해제
-            if (targetItem != null && targetItem!=value)
-            {
-                targetItem.GetComponent<Item>().OutlineOff();
-            }
-            targetItem = value; }
+
+            target = value;
+    
+        }
     }
     private void Awake()
     {
@@ -104,10 +104,10 @@ public class Player : MonoBehaviour
 
         if (distance < distanceRange * distanceRange)
         {
-            if(TargetItem!=null)
+            if(Target!=null)
             {
-                PickUpItem(TargetItem);
-                TargetItem = null;
+                PickUpItem(Target);
+                Target = null;
             }
 
             isMoving = false;

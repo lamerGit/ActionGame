@@ -156,6 +156,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "GameManager",
+            "id": "d45ce9ac-a597-4f70-b106-9ef93654099b",
+            "actions": [
+                {
+                    "name": "ItemNameOnOff",
+                    "type": "Button",
+                    "id": "d06366f9-4b75-4fda-b905-8617f9807fd4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "02e0b7f4-fdfb-40ab-8e42-c4c8636f444f",
+                    "path": "<Keyboard>/leftAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "ItemNameOnOff",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

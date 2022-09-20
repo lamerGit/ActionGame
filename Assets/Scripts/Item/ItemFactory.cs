@@ -11,17 +11,18 @@ public class ItemFactory : MonoBehaviour
     {
         GameObject obj = new GameObject();
         Item item=obj.AddComponent<Item>();
+        obj.AddComponent<OutlineController>();
 
         item.data = DataManager.Instance.Items[(int)code];
         string itemName = item.data.itemName;
         obj.name = $"{itemName}_{itemCount}";
         obj.layer = LayerMask.NameToLayer("Item");
+        obj.tag = "Item";
         SphereCollider col=obj.AddComponent<SphereCollider>();
-        col.radius = 0.5f;
-        col.center = new Vector3(0, 1.0f, 0);
+        col.radius = 1.0f;
+        col.center = new Vector3(0, 0.5f, 0);
         col.isTrigger = true;
         itemCount++;
-
 
         return obj;
     }
