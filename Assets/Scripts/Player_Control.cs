@@ -96,6 +96,10 @@ public class Player_Control : MonoBehaviour
             lookDir.y = 0.0f;
             lookDir = lookDir.normalized;
             player.Target = rayTarget;
+            if(rayTarget!=null)
+            {
+                targetPos = rayTarget.transform.root.position;
+            }
         }
         
 
@@ -108,9 +112,29 @@ public class Player_Control : MonoBehaviour
     {
         if (rayTarget != null)
         {
+           
+            OutlineController outlineController=rayTarget.GetComponent<OutlineController>();
+            ItemNameController itemNameController=rayTarget.GetComponent<ItemNameController>();
+
+            if(outlineController!=null)
+            {
+                outlineController.OutlineOff();
+            }
+
+            if(itemNameController!=null)
+            {
+                itemNameController.NameOff();
+            }
+
+            //rayTarget.GetComponent<OutlineController>().OutlineOff();
             
-           rayTarget.GetComponent<OutlineController>().OutlineOff();
-            
+
+            //if(rayTarget.gameObject.layer==LayerMask.GetMask("ItemName"))
+            //{
+            //    rayTarget.GetComponent<ItemNameController>().NameOff();
+            //}
+
+
         }
         Vector2 sceenPos = mousePos;
         Ray ray = Camera.main.ScreenPointToRay(sceenPos);
@@ -120,9 +144,13 @@ public class Player_Control : MonoBehaviour
             rayTarget= hitItem.transform.gameObject;
             rayTarget.GetComponent<OutlineController>().OutlineOn();
             //player.TargetItem = hitItem.transform.gameObject;
+        }else if(Physics.Raycast(ray, out RaycastHit hitItemName, 1000.0f, LayerMask.GetMask("ItemName")))
+        {
+            rayTarget= hitItemName.transform.gameObject;
+            rayTarget.GetComponent<ItemNameController>().NameOn();
         }else
         {
-            rayTarget= null;
+            rayTarget = null;
         }
     }
 

@@ -13,7 +13,7 @@ public class OutlineController : MonoBehaviour
     {
 
 
-        for (int i = 1; i < allChildren.Length; i++)
+        for (int i = 1; i < allChildren.Length-1; i++)
         {
             allChildren[i].gameObject.layer = LayerMask.NameToLayer("Outline");
             //Debug.Log(child.name);
@@ -24,7 +24,7 @@ public class OutlineController : MonoBehaviour
     public void OutlineOff()
     {
 
-        for (int i = 1; i < allChildren.Length; i++)
+        for (int i = 1; i < allChildren.Length-1; i++)
         {
             allChildren[i].gameObject.layer = LayerMask.NameToLayer("Default");
             //Debug.Log(child.name);

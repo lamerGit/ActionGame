@@ -5,9 +5,7 @@ using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
-    Vector3 lookDir;
-    Vector3 targetVector;
-    Vector3 goalVector;
+ 
     NavMeshAgent agent;
     
 
@@ -106,7 +104,15 @@ public class Player : MonoBehaviour
         {
             if(Target!=null)
             {
-                PickUpItem(Target);
+                if(Target.layer==LayerMask.NameToLayer("Item"))
+                {
+                    PickUpItem(Target);
+                }
+                if(Target.layer==LayerMask.NameToLayer("ItemName"))
+                {
+                    PickUpItem(Target.transform.root.gameObject);
+                }
+                
                 Target = null;
             }
 

@@ -1,12 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-
+using TMPro;
 public class ItemNameController : MonoBehaviour
 {
+    TextMeshPro textMeshPro;
+    OutlineController outlineController;
+
+    public GameObject Root
+    {
+        get { return transform.root.gameObject; }
+    }
+
+    private void Awake()
+    {
+        textMeshPro = GetComponent<TextMeshPro>();
+        outlineController=transform.root.GetComponent<OutlineController>();
+    }
+
     private void Start()
     {
+        
         if (GameManager.Instance.ItemNameCheck)
         {
             gameObject.SetActive(true);
@@ -16,6 +30,18 @@ public class ItemNameController : MonoBehaviour
             gameObject.SetActive(false);
         }
         transform.forward = Camera.main.transform.forward;
+    }
+
+    public void NameOn()
+    {
+        textMeshPro.color = Color.green;
+        outlineController.OutlineOn();
+    }
+
+    public void NameOff()
+    {
+        textMeshPro.color = Color.white;
+        outlineController.OutlineOff();
     }
 
 
