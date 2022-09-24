@@ -18,3 +18,29 @@ public enum EquipType
     Armor,
     None
 }
+
+public enum SkillType
+{
+    Attack=0,
+    Prayer,
+    Vigor,
+    Might,
+    Holyfire,
+    HolyBolt,
+    BlessedHammer
+
+}
+
+public enum IdleMotion
+{
+    SwordAndShield=0,
+    TwinSword,
+    NoWeapon
+}
+
+public enum WeaponType
+{
+    None=0,
+    Shield,
+    Sword
+}

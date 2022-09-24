@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,7 +8,8 @@ public class Player : MonoBehaviour
 {
  
     NavMeshAgent agent;
-    
+
+    public AnimatorController anime;
 
     public float turnSpeed = 30.0f;
     public float moveSpeed = 10.0f;
@@ -20,6 +22,19 @@ public class Player : MonoBehaviour
     bool isMoving = false;
 
     bool isLeftClick = false;
+    bool isAttack = false;
+    bool targetOn = false;
+
+    public bool IsAttack
+    {
+        get { return isAttack; }
+    }
+
+    public bool TargetOn
+    {
+        get { return targetOn; }
+        set { targetOn = value; }
+    }
 
     public bool IsLeftClick
     {
@@ -31,20 +46,87 @@ public class Player : MonoBehaviour
     GameObject target=null;
     ItemGrid playerInventory;
     InventoryController inventoryController;
+    IBattle targetInterface;
 
     float pickUpRange = 3.0f;
 
+    SkillType leftSkill = SkillType.Attack;
+    SkillType rightSkill = SkillType.Attack;
+
+    Player_Skill player_Skill;
+
+    int Level = 1;
+
+    InventoryItem leftHand;
+    InventoryItem armor;
+    InventoryItem rightHand;
+
+    public InventoryItem LeftHand
+    {
+        get { return leftHand; }
+        set
+        {
+            if(leftHand!=null)
+            {
+                GameObject temp = findPlayerLeftHand.gameObject.transform.GetChild(0).gameObject;
+                Destroy(temp);
+            }
+            
+            leftHand = value;
+            if(leftHand==null)
+            {
+                GameObject temp = findPlayerLeftHand.gameObject.transform.GetChild(0).gameObject;
+                Destroy(temp);
+            }else
+            {
+                GameObject temp= Instantiate(leftHand.itemData.equipItem, findPlayerLeftHand.gameObject.transform);
+                temp.transform.localPosition = new(0, 0, 0);
+                temp.transform.localRotation = Quaternion.Euler(leftHand.itemData.leftHandRotation);
+            }
+        }
+    }
+
+    public InventoryItem RightHand
+    {
+        get { return rightHand; }
+        set
+        {
+            if(rightHand!=null)
+            {
+                GameObject temp = findPlayerRightHand.gameObject.transform.GetChild(0).gameObject;
+                Destroy(temp);
+            }
+           
+            rightHand = value;
+            if(rightHand==null)
+            {
+                GameObject temp = findPlayerRightHand.gameObject.transform.GetChild(0).gameObject;
+                Destroy(temp);
+            }else
+            {
+                GameObject temp = Instantiate(rightHand.itemData.equipItem, findPlayerRightHand.gameObject.transform);
+                temp.transform.localPosition = new(0, 0, 0);
+                temp.transform.localRotation = Quaternion.Euler(rightHand.itemData.rightHandRotation);
+
+                
+            }
+        }
+    }
+
+    float power = 1.0f;
+    float denfence = 1.0f;
+
+    FindPlayerLeftHand findPlayerLeftHand;
+    FindPlayerRightHand findPlayerRightHand;
 
     /// <summary>
-    /// 현재 내가 선택한 아이템
+    /// 현재 내가 선택한 타겟
     /// </summary>
     public GameObject Target
     {
         get { return target; }
         set
         {
-            //자신말고 다른아이템을 선택했을때 아웃라인 해제
-
             target = value;
     
         }
@@ -57,6 +139,9 @@ public class Player : MonoBehaviour
         agent.acceleration = moveSpeed * moveSpeed;
         playerInventory=FindObjectOfType<FindPlayerInventory>().GetComponent<ItemGrid>();
         inventoryController = FindObjectOfType<InventoryController>();
+        player_Skill = GetComponent<Player_Skill>();
+        findPlayerLeftHand = FindObjectOfType<FindPlayerLeftHand>();
+        findPlayerRightHand = FindObjectOfType<FindPlayerRightHand>();
     }
 
     /// <summary>
@@ -86,10 +171,12 @@ public class Player : MonoBehaviour
     /// <param name="v">Player_Control에서 움직임을 받아온다</param>
     public void MovePlayer(Vector3 v)
     {
-        
-        agent.SetDestination(v);
-        isMoving = true;
-        animator.SetBool("isMove", isMoving);
+        if (!isAttack)
+        {
+            agent.SetDestination(v);
+            isMoving = true;
+            animator.SetBool("isMove", isMoving);
+        }
     }
 
     /// <summary>
@@ -99,6 +186,30 @@ public class Player : MonoBehaviour
     public void DistaceAcess(Vector3 v)
     {
         float distance = (v - transform.position).sqrMagnitude;
+
+        if (Target != null)
+        {
+            if (Target.layer == LayerMask.NameToLayer("Enemy") && IsLeftClick)
+            {
+                TargetOn = true;
+
+                float skillRange = player_Skill.skillDatas[(int)leftSkill].range;
+                if (distance < skillRange * skillRange)
+                {
+                    //Debug.Log("스킬발동");
+                    isAttack=true;
+                    targetInterface = Target.GetComponent<IBattle>();
+                    animator.SetBool("Attack", isAttack);
+                    agent.ResetPath();
+                    if (!IsLeftClick)
+                    {
+                        Target = null;
+                        TargetOn = false;
+                    }
+                }
+                return;
+            }
+        }
 
         if (distance < distanceRange * distanceRange)
         {
@@ -115,9 +226,11 @@ public class Player : MonoBehaviour
                 
                 Target = null;
             }
-
-            isMoving = false;
-            animator.SetBool("isMove", isMoving);
+            if (!IsLeftClick)
+            {
+                isMoving = false;
+                animator.SetBool("isMove", isMoving);
+            }
         }
     }
 
@@ -156,4 +269,14 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void AttackOff()
+    {
+        isAttack = false;
+        animator.SetBool("Attack", isAttack);
+        if(targetInterface != null)
+        {
+            targetInterface.TakeDamage(power);
+            targetInterface = null;
+        }
+    }
 }

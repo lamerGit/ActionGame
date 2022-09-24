@@ -18,4 +18,8 @@ MonoBehaviour:
   itemName: "\uBC29\uD328"
   itemPrefab: {fileID: 7715749130160017982, guid: 06e05a09af268ee4b893dcaab038fbcc, type: 3}
   itemID: 4
-  equipType: 1
+  equipType: 0
+  equipItem: {fileID: 6597358353836066591, guid: bab16cf0ec73795449e2ac2d09e01b0a, type: 3}
+  leftHandRotation: {x: 0, y: -90, z: -90}
+  rightHandRotation: {x: 0, y: 0, z: 0}
+  weaponType: 1

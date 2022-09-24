@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu]
+[CreateAssetMenu(fileName="New Item Data",menuName ="Scriptable Object/Item Data",order =0)]
 public class ItemData : ScriptableObject
 {
     /// <summary>
@@ -16,9 +16,16 @@ public class ItemData : ScriptableObject
 
     public string itemName;
 
-    public GameObject itemPrefab;
+    public GameObject itemPrefab; // 땅에 떨어지는 아이템
 
     public uint itemID = 0;
 
     public EquipType equipType = EquipType.None;
+
+    public GameObject equipItem; // 장착시 보여줄 아이템
+
+    public Vector3 leftHandRotation; //왼손장착시 회전
+    public Vector3 rightHandRotation; //오른손 장착시 회전
+
+    public WeaponType weaponType = WeaponType.None;
 }

@@ -13,13 +13,14 @@ public class Player_Control : MonoBehaviour
     Vector3 targetPos;
     Vector2 mousePos;
 
-    bool isLeftClick = false;
+    //bool isLeftClick = false;
 
     GameObject rayTarget = null;
 
     private void Awake()
     {
         inputActions = new PlayerInput();
+    
 
     }
 
@@ -32,7 +33,7 @@ public class Player_Control : MonoBehaviour
     {
         mousePos = Mouse.current.position.ReadValue();
         RayTarget();
-        if (isLeftClick)
+        if (player.IsLeftClick)
         {
             mouseRay();
          
@@ -70,12 +71,14 @@ public class Player_Control : MonoBehaviour
             mouseRay();
             player.CFXSet(targetPos);
             player.DropItem();
-            isLeftClick = true;
-           
+            //isLeftClick = true;
+            player.IsLeftClick = true;
             
         }else
         {
-            isLeftClick = false;
+            player.IsLeftClick = false;
+            player.TargetOn = false;
+            //isLeftClick = false;
      
         }
         
@@ -88,7 +91,7 @@ public class Player_Control : MonoBehaviour
     {
         Vector2 sceenPos = mousePos;
         Ray ray = Camera.main.ScreenPointToRay(sceenPos);
-        if (Physics.Raycast(ray, out RaycastHit hit, 1000.0f, LayerMask.GetMask("Ground")))
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000.0f, LayerMask.GetMask("Ground")) && !player.TargetOn)
         {
             targetPos = hit.point;
 
@@ -138,17 +141,44 @@ public class Player_Control : MonoBehaviour
         }
         Vector2 sceenPos = mousePos;
         Ray ray = Camera.main.ScreenPointToRay(sceenPos);
-        if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
+        //if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
+        //{
+        //    //player.PickUpItem(hitItem.transform.gameObject);
+        //    rayTarget= hitItem.transform.gameObject;
+        //    rayTarget.GetComponent<OutlineController>().OutlineOn();
+        //    //player.TargetItem = hitItem.transform.gameObject;
+        //}else if(Physics.Raycast(ray, out RaycastHit hitItemName, 1000.0f, LayerMask.GetMask("ItemName")))
+        //{
+        //    rayTarget= hitItemName.transform.gameObject;
+        //    rayTarget.GetComponent<ItemNameController>().NameOn();
+        //}else if(Physics.Raycast(ray, out RaycastHit hitEnemy, 1000.0f, LayerMask.GetMask("Enemy")))
+        //{
+        //    rayTarget = hitEnemy.transform.gameObject;
+        //}
+        //else 
+        //{
+        //    rayTarget = null;
+        //}
+
+
+        if (Physics.Raycast(ray, out RaycastHit hitEnemy, 1000.0f, LayerMask.GetMask("Enemy")))
         {
             //player.PickUpItem(hitItem.transform.gameObject);
-            rayTarget= hitItem.transform.gameObject;
-            rayTarget.GetComponent<OutlineController>().OutlineOn();
+            rayTarget = hitEnemy.transform.gameObject;
             //player.TargetItem = hitItem.transform.gameObject;
-        }else if(Physics.Raycast(ray, out RaycastHit hitItemName, 1000.0f, LayerMask.GetMask("ItemName")))
+        }
+        else if (Physics.Raycast(ray, out RaycastHit hitItemName, 1000.0f, LayerMask.GetMask("ItemName")))
         {
-            rayTarget= hitItemName.transform.gameObject;
+            rayTarget = hitItemName.transform.gameObject;
             rayTarget.GetComponent<ItemNameController>().NameOn();
-        }else
+        }
+        else if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
+        {
+            
+            rayTarget = hitItem.transform.gameObject;
+            rayTarget.GetComponent<OutlineController>().OutlineOn();
+        }
+        else
         {
             rayTarget = null;
         }
@@ -177,4 +207,5 @@ public class Player_Control : MonoBehaviour
         return results.Count > 0;
 
     }
+
 }

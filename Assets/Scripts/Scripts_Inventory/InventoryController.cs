@@ -56,8 +56,8 @@ public class InventoryController : MonoBehaviour
     PlayerInput inputActions;
 
     FindPlayerInventory playerInventory;
+    ItemGrid playerItemGrid;
     EquipControl playerEquipControl;
-
 
     public InventoryItem SelectedItem
     {
@@ -71,6 +71,7 @@ public class InventoryController : MonoBehaviour
         detailRectTrensform = detailInfo.gameObject.GetComponent<RectTransform>();
         playerInventory=FindObjectOfType<FindPlayerInventory>();
         playerEquipControl=FindObjectOfType<EquipControl>();
+        playerItemGrid=playerInventory.GetComponent<ItemGrid>();
     }
 
     private void OnEnable()
@@ -95,18 +96,22 @@ public class InventoryController : MonoBehaviour
 
     private void OnInventoryOnOff(InputAction.CallbackContext obj)
     {
-        //인벤토리가 off될때 선택하고 있는 인벤토리할당해제
-        if(!playerInventory.OnOff())
+        //인벤토리가 off될때 선택하고 있는 인벤토리할당해제 인벤토리 끌때 아이템 들고있으면 들고있는 아이템 부모변경
+        if (!playerInventory.OnOff())
         {
+            if(selectedItem!=null)
+            {
+                rectTransform.SetParent(canvasTransform);
+            }
+
             selectedItemGrid = null;
             detailInfo.OnOff(false);
         }
         if (!playerEquipControl.OnOff())
         {
-
+           selectedEquipSlot = null;
         }
 
-        
     }
 
     private void OnCreateItem(InputAction.CallbackContext obj)
@@ -377,14 +382,20 @@ public class InventoryController : MonoBehaviour
 
             InventoryItem itemToInsert = selectedItem;
             Vector2Int? posOnGrid = inventory.FindSpaceforObject(itemToInsert);
-            if (posOnGrid != null)
+            if(playerInventory.gameObject.activeSelf)
             {
+                //인벤토리가 켜져있을때는 인벤토리에 넣지않고 손에들고 있게 하기 위한 if문
+            }
+            else if (posOnGrid != null)
+            {
+                //인벤토리에 자리가 있으면 아이템을 넣는다
                 selectedItem = null;
                 InsertItem(itemToInsert,inventory);
                 //Destroy(selectedItem.gameObject);
                 //return;
             }else
             {
+                //인벤토리에 자리가 없으면 손에 들고있는 상태로 인벤토리를 킨다.
                 playerInventory.OnInventory();
                 playerEquipControl.OnInventory();
             }
@@ -417,8 +428,9 @@ public class InventoryController : MonoBehaviour
     }
 
     /// <summary>
-    /// 마우스위치를 통해 몇번째 타일을 선택했는 지 확인하고 현재 들고있는 아이템이 없다면 그냥들고
+    /// 마우스위치를 통해 몇번째 타일을 선택했는지 확인하고 현재 들고있는 아이템이 없다면 그냥들고
     /// 아이템이 있다면 PlaceItem을 통해 아이템을 교채해준다.
+    /// 마우스위치를 통해 장비슬롯을 선택했는지 확인하고 여러가지 경우의수를 확인하고 장비를 장착할것인지 안할것인지 결정
     /// </summary>
     private void LeftMouseButtonPress()
     {
@@ -445,41 +457,87 @@ public class InventoryController : MonoBehaviour
         {
             if (selectedEquipSlot.SlotItem == null && selectedItem != null) //장비슬롯에 아이템이없고 아이템을 들고있을때
             {
-                if (selectedEquipSlot.PlaceItem(selectedItem))
+                EquipSlot shieldCheck = playerEquipControl.FindEquipShield(); // 장비슬롯중에 실드가있는지 확인한다.
+
+                if (shieldCheck == null) // 실드가 없으면 슬롯에 장착
                 {
-                    selectedItem = null;
+                    if (selectedEquipSlot.PlaceItem(selectedItem))
+                    {
+                        selectedItem = null;
+                    }
+                }else //실드가 있을때
+                {
+                    if (selectedEquipSlot.PlaceItem(selectedItem))
+                    {
+                        if (selectedItem.itemData.weaponType == WeaponType.Shield) // 현재 들고있는 아이템이 실드일때
+                        {
+                            //다른슬롯에 있는 실드를 손에들고 슬롯을 빈슬롯으로 만듬
+                            InventoryItem tempSlotItem = shieldCheck.SlotItem; 
+                            EquipSlotPlaceItem(tempSlotItem);
+                            shieldCheck.SlotItem = null;
+                        }else
+                        {
+                            //현재 들고있는 아이템이 실드가 아니면 그냥 장착
+                            selectedItem = null;
+                        }
+                    }
                 }
             } else if (selectedEquipSlot.SlotItem != null && selectedItem == null) // 장비슬롯에 아이템이있고 들고있는 아이템이 없을때
             {
                 InventoryItem tempSlotItem = selectedEquipSlot.SlotItem;
                 EquipSlotPlaceItem(tempSlotItem);
                 selectedEquipSlot.SlotItem = null;
+               
             }
             else if (selectedEquipSlot.SlotItem != null && selectedItem != null) // 장비슬롯에 아이템이있고 들고있는 아이템이 있을때
             {
                 InventoryItem tempSlotItem = selectedEquipSlot.SlotItem;
-                if(selectedEquipSlot.PlaceItem(selectedItem))
+                EquipSlot shieldCheck = playerEquipControl.FindEquipShield(); // 장비하고 있는 실드가 있는지 확인
+                if (shieldCheck == null) // 실드가 없으면 대상 장비하고 스왑
                 {
-                    //Debug.Log("성공");
-                    EquipSlotPlaceItem(tempSlotItem);
-                 
-                }else
-                {
-                    //Debug.Log("실패");
-                }
-                //EquipSlotPlaceItem();
-                
+                    if (selectedEquipSlot.PlaceItem(selectedItem))
+                    {
+                        //Debug.Log("성공");
+                        EquipSlotPlaceItem(tempSlotItem);
+                        //selectedItem = null;
 
-                
+                    }
+                }else //실드가 있을때
+                {
+                    //현재슬롯에 실드이면 있으면 장비스왑
+                    if(selectedEquipSlot.SlotItem.itemData.weaponType==WeaponType.Shield)
+                    {
+                        if(selectedEquipSlot.PlaceItem(selectedItem))
+                        {
+                            EquipSlotPlaceItem(tempSlotItem);
+                        }
+                    }else
+                    {
+                        //현재슬롯이 실드가 아니라면 장비를 스왑하고 다른칸에 있는 아이템은 인벤토리로 간다.
+                        if(selectedEquipSlot.PlaceItem(selectedItem))
+                        {
+                            
+                            InventoryItem tempSlotItemshiled = shieldCheck.SlotItem;
+                            RectTransform r= tempSlotItemshiled.GetComponent<RectTransform>();
+                            r.pivot = pivot;
+                            r.anchorMax = pivot;
+                            r.anchorMin = pivot;
+                            InsertItem(tempSlotItemshiled,playerItemGrid);
+                            shieldCheck.SlotItem = null;
+                            EquipSlotPlaceItem(tempSlotItem);
+
+                        }
+                    }
+                }
                 
             }
             
         }
     }
-
+    Vector2 pivot = new Vector2(0, 1.0f);
     private void EquipSlotPlaceItem(InventoryItem slotItem)
     {
-        Vector2 pivot = new Vector2(0, 1.0f);
+       
         selectedItem = slotItem;
         rectTransform = selectedItem.GetComponent<RectTransform>();
         rectTransform.SetParent(playerInventory.transform);
@@ -547,6 +605,7 @@ public class InventoryController : MonoBehaviour
         if (selectedItem != null)
         {
             rectTransform = selectedItem.GetComponent<RectTransform>();
+            rectTransform.SetAsLastSibling();
         }
 
     }

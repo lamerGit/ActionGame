@@ -18,6 +18,7 @@ public class OutlineController : MonoBehaviour
             allChildren[i].gameObject.layer = LayerMask.NameToLayer("Outline");
             //Debug.Log(child.name);
         }
+        allChildren[allChildren.Length - 1].gameObject.SetActive(true);
 
     }
 
@@ -28,6 +29,10 @@ public class OutlineController : MonoBehaviour
         {
             allChildren[i].gameObject.layer = LayerMask.NameToLayer("Default");
             //Debug.Log(child.name);
+        }
+        if (!GameManager.Instance.ItemNameCheck)
+        {
+            allChildren[allChildren.Length - 1].gameObject.SetActive(false);
         }
     }
 }

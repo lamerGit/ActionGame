@@ -5,7 +5,7 @@ using UnityEngine;
 public class FollowCamera : MonoBehaviour
 {
     Transform target;
-    float speed = 3.0f;
+    public float speed = 3.0f;
     public Vector3 offset;
 
     private void Start()
