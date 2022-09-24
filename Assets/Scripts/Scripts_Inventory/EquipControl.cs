@@ -6,7 +6,7 @@ using UnityEngine;
 public class EquipControl : MonoBehaviour
 {
     EquipSlot[] equipSlot;
-
+    public GameObject backGround;
     private void Awake()
     {
         equipSlot = new EquipSlot[transform.childCount];
@@ -17,7 +17,7 @@ public class EquipControl : MonoBehaviour
     }
     private void Start()
     {
-        
+        backGround.SetActive(false);
         gameObject.SetActive(false);
     }
 
@@ -25,12 +25,13 @@ public class EquipControl : MonoBehaviour
     {
         if (gameObject.activeSelf)
         {
-
+            backGround.SetActive(false);
             gameObject.SetActive(false);
             return false;
         }
         else
         {
+            backGround.SetActive(true);
             gameObject.SetActive(true);
             return true;
         }
@@ -38,6 +39,7 @@ public class EquipControl : MonoBehaviour
 
     public void OnInventory()
     {
+        backGround.SetActive(true);
         gameObject.SetActive(true);
     }
 

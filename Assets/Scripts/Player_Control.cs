@@ -16,32 +16,43 @@ public class Player_Control : MonoBehaviour
     //bool isLeftClick = false;
 
     GameObject rayTarget = null;
+    MonsterHpBarController monsterHpBar;
 
     private void Awake()
     {
         inputActions = new PlayerInput();
-    
-
+        monsterHpBar = FindObjectOfType<MonsterHpBarController>();
     }
 
     private void Start()
     {
         player = GetComponent<Player>();
+        
     }
 
     private void FixedUpdate()
     {
         mousePos = Mouse.current.position.ReadValue();
+
+        if (!player.TargetOn)
+        {
+            RayTargetOutline();
+        }
         RayTarget();
         if (player.IsLeftClick)
         {
             mouseRay();
          
             player.MovePlayer(targetPos);
-            player.TurnPlayer(lookDir);
+
+            if (!player.IsAttack)
+            {
+                player.TurnPlayer(lookDir);
+            }
 
         }
         player.DistaceAcess(targetPos);
+        
 
     }
 
@@ -113,58 +124,25 @@ public class Player_Control : MonoBehaviour
     /// </summary>
     private void RayTarget()
     {
-        if (rayTarget != null)
-        {
-           
-            OutlineController outlineController=rayTarget.GetComponent<OutlineController>();
-            ItemNameController itemNameController=rayTarget.GetComponent<ItemNameController>();
 
-            if(outlineController!=null)
-            {
-                outlineController.OutlineOff();
-            }
-
-            if(itemNameController!=null)
-            {
-                itemNameController.NameOff();
-            }
-
-            //rayTarget.GetComponent<OutlineController>().OutlineOff();
-            
-
-            //if(rayTarget.gameObject.layer==LayerMask.GetMask("ItemName"))
-            //{
-            //    rayTarget.GetComponent<ItemNameController>().NameOff();
-            //}
-
-
-        }
         Vector2 sceenPos = mousePos;
         Ray ray = Camera.main.ScreenPointToRay(sceenPos);
-        //if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
-        //{
-        //    //player.PickUpItem(hitItem.transform.gameObject);
-        //    rayTarget= hitItem.transform.gameObject;
-        //    rayTarget.GetComponent<OutlineController>().OutlineOn();
-        //    //player.TargetItem = hitItem.transform.gameObject;
-        //}else if(Physics.Raycast(ray, out RaycastHit hitItemName, 1000.0f, LayerMask.GetMask("ItemName")))
-        //{
-        //    rayTarget= hitItemName.transform.gameObject;
-        //    rayTarget.GetComponent<ItemNameController>().NameOn();
-        //}else if(Physics.Raycast(ray, out RaycastHit hitEnemy, 1000.0f, LayerMask.GetMask("Enemy")))
-        //{
-        //    rayTarget = hitEnemy.transform.gameObject;
-        //}
-        //else 
-        //{
-        //    rayTarget = null;
-        //}
 
 
         if (Physics.Raycast(ray, out RaycastHit hitEnemy, 1000.0f, LayerMask.GetMask("Enemy")))
         {
             //player.PickUpItem(hitItem.transform.gameObject);
             rayTarget = hitEnemy.transform.gameObject;
+            rayTarget.GetComponent<OutlineController>().OutlineOn();
+            Enemy rayEnemy = rayTarget.GetComponent<Enemy>();
+            monsterHpBar.Setinfo(rayEnemy);
+            rayEnemy.onHealthChangeEnemy += (ratio) =>
+            {
+                monsterHpBar.Setinfo(ratio);
+            };
+           
+            
+            //monsterHpBar.Setinfo(rayTarget.GetComponent<Enemy>());
             //player.TargetItem = hitItem.transform.gameObject;
         }
         else if (Physics.Raycast(ray, out RaycastHit hitItemName, 1000.0f, LayerMask.GetMask("ItemName")))
@@ -174,7 +152,7 @@ public class Player_Control : MonoBehaviour
         }
         else if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
         {
-            
+
             rayTarget = hitItem.transform.gameObject;
             rayTarget.GetComponent<OutlineController>().OutlineOn();
         }
@@ -182,6 +160,33 @@ public class Player_Control : MonoBehaviour
         {
             rayTarget = null;
         }
+
+       
+
+    }
+
+    private void RayTargetOutline()
+    {
+        if (rayTarget != null)
+        {
+
+            OutlineController outlineController = rayTarget.GetComponent<OutlineController>();
+            ItemNameController itemNameController = rayTarget.GetComponent<ItemNameController>();
+
+            if (outlineController != null)
+            {
+
+                outlineController.OutlineOff();
+
+            }
+
+            if (itemNameController != null)
+            {
+                itemNameController.NameOff();
+            }
+
+        }
+        monsterHpBar.gameObject.SetActive(false);
     }
 
     private void OnLook(InputAction.CallbackContext obj)

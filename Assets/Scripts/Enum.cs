@@ -44,3 +44,10 @@ public enum WeaponType
     Shield,
     Sword
 }
+
+public enum MonsterType
+{
+    beast=0,
+    demon,
+    undead
+}

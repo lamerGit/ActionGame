@@ -432,7 +432,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1435209604592098}
-  m_LocalRotation: {x: -5.551115e-17, y: 1.110223e-16, z: -0.1266539, w: 0.991947}
+  m_LocalRotation: {x: -5.5511148e-17, y: 1.110223e-16, z: -0.12665388, w: 0.991947}
   m_LocalPosition: {x: -0.33054718, y: -3.5527136e-17, z: 7.552034e-17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -804,8 +804,9 @@ GameObject:
   - component: {fileID: 95237074988894122}
   - component: {fileID: 2106156802}
   - component: {fileID: 2106156801}
-  - component: {fileID: 2106156805}
   - component: {fileID: 2106156806}
+  - component: {fileID: 2106156805}
+  - component: {fileID: 6073633961821959726}
   m_Layer: 12
   m_Name: SpikeFiend
   m_TagString: Untagged
@@ -840,7 +841,7 @@ Animator:
   m_GameObject: {fileID: 1774625739149480}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0d3c605385d6d9547a1e3f24e8248962, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: debc17797bf38714687d8af14e16a114, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -879,6 +880,28 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0.3, z: 0}
+--- !u!195 &2106156806
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774625739149480}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.7
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: -0.1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!114 &2106156805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -891,28 +914,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b864f404ca78dc40bd04b1bc6735224, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!195 &2106156806
-NavMeshAgent:
+  monsterData: {fileID: 11400000, guid: 9767d10a59fd23f4ab9fa2d63abd5a4a, type: 2}
+--- !u!114 &6073633961821959726
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1774625739149480}
   m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 51
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: -0.1
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e0c0a574f6878f4988dd0a98f31a823, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1822049695589022
 GameObject:
   m_ObjectHideFlags: 0

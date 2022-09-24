@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86dded729849802478c2b49438adfd28, type: 3}
   m_Name: SpikeFiend
   m_EditorClassIdentifier: 
+  monsterName: "\uAC00\uC2DC\uB9C8\uADC0"
+  monsterType: 0
   minHP: 100
   maxHP: 300

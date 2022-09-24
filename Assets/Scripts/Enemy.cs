@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour, IBattle
         set
         {
             hp = Mathf.Clamp(value, 0.0f, maxhp);
-
+            onHealthChangeEnemy?.Invoke(this);
 
         }
     }
@@ -25,6 +25,8 @@ public class Enemy : MonoBehaviour, IBattle
         
         }
     }
+
+    public System.Action<Enemy> onHealthChangeEnemy { get; set; }
 
     private void Start()
     {

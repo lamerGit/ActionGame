@@ -13,12 +13,19 @@ public class OutlineController : MonoBehaviour
     {
 
 
-        for (int i = 1; i < allChildren.Length-1; i++)
+        for (int i = 1; i < allChildren.Length - 1; i++)
         {
             allChildren[i].gameObject.layer = LayerMask.NameToLayer("Outline");
             //Debug.Log(child.name);
         }
-        allChildren[allChildren.Length - 1].gameObject.SetActive(true);
+
+        if (allChildren[allChildren.Length - 1].gameObject.layer == LayerMask.NameToLayer("ItemName"))
+        {
+
+            allChildren[allChildren.Length - 1].gameObject.SetActive(true);
+        }
+
+
 
     }
 
@@ -32,7 +39,11 @@ public class OutlineController : MonoBehaviour
         }
         if (!GameManager.Instance.ItemNameCheck)
         {
-            allChildren[allChildren.Length - 1].gameObject.SetActive(false);
+            if (allChildren[allChildren.Length - 1].gameObject.layer == LayerMask.NameToLayer("ItemName"))
+            {
+
+                allChildren[allChildren.Length - 1].gameObject.SetActive(false);
+            }
         }
     }
 }

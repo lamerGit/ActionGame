@@ -113,7 +113,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    float power = 1.0f;
+    float power = 20.0f;
     float denfence = 1.0f;
 
     FindPlayerLeftHand findPlayerLeftHand;
@@ -127,8 +127,28 @@ public class Player : MonoBehaviour
         get { return target; }
         set
         {
+            if (target != null)
+            {
+
+                OutlineController outlineController = target.GetComponent<OutlineController>();
+                ItemNameController itemNameController = target.GetComponent<ItemNameController>();
+
+                if (outlineController != null)
+                {
+
+                    outlineController.OutlineOff();
+
+                }
+
+                if (itemNameController != null)
+                {
+                    itemNameController.NameOff();
+                }
+
+            }
             target = value;
-    
+            
+
         }
     }
     private void Awake()
@@ -174,6 +194,7 @@ public class Player : MonoBehaviour
         if (!isAttack)
         {
             agent.SetDestination(v);
+
             isMoving = true;
             animator.SetBool("isMove", isMoving);
         }
