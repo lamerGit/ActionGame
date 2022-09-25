@@ -23,11 +23,11 @@ public enum SkillType
 {
     Attack=0,
     HolyBolt,
+    BlessedHammer,
     Prayer,
     Vigor,
     Might,
     Holyfire,
-    BlessedHammer,
     None
 
 }

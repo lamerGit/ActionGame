@@ -2035,7 +2035,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4705785534427524733, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
       propertyPath: skillDatas.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4705785534427524733, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
       propertyPath: skillDatas.Array.data[0]
@@ -2045,6 +2045,10 @@ PrefabInstance:
       propertyPath: skillDatas.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: 45db761554c7dce468022b28ceb94f88, type: 2}
+    - target: {fileID: 4705785534427524733, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
+      propertyPath: skillDatas.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 9ed94185542c97c42a55fb697dd828cf, type: 2}
     - target: {fileID: 4789017833591251130, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
       propertyPath: m_Layer
       value: 13
@@ -2137,11 +2141,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6867671820736462611, guid: af8e4eab36e1167468593b282981953d, type: 3}
     - target: {fileID: 5588696279657149872, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
+      propertyPath: holyBolt
+      value: 
+      objectReference: {fileID: 6867671820736462611, guid: af8e4eab36e1167468593b282981953d, type: 3}
+    - target: {fileID: 5588696279657149872, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
       propertyPath: turnSpeed
       value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5588696279657149872, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
+      propertyPath: blessdHammer
+      value: 
+      objectReference: {fileID: 191102, guid: b88a82ebb473b9042a90c9fd3cc9802f, type: 3}
+    - target: {fileID: 5588696279657149872, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
       propertyPath: HolyBoltEffect
+      value: 
+      objectReference: {fileID: 1918476138427834, guid: 6b9b18de98416b7458609ebe7535a13a, type: 3}
+    - target: {fileID: 5588696279657149872, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}
+      propertyPath: holyBoltEffect
       value: 
       objectReference: {fileID: 1918476138427834, guid: 6b9b18de98416b7458609ebe7535a13a, type: 3}
     - target: {fileID: 5588696279657149872, guid: a4bc081da036f5540bcdc46b9715bc16, type: 3}

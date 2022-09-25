@@ -15,8 +15,9 @@ public class Player : MonoBehaviour
     public float moveSpeed = 10.0f;
 
     public GameObject targetCFX;
-    public GameObject HolyBoltEffect;
-    public GameObject HolyBolt;
+    public GameObject holyBoltEffect;
+    public GameObject holyBolt;
+    public GameObject blessdHammer;
 
     float distanceRange = 1.5f;
 
@@ -143,25 +144,7 @@ public class Player : MonoBehaviour
         get { return target; }
         set
         {
-            //if (target != null)
-            //{
-
-            //    OutlineController outlineController = target.GetComponent<OutlineController>();
-            //    ItemNameController itemNameController = target.GetComponent<ItemNameController>();
-
-            //    if (outlineController != null)
-            //    {
-
-            //        outlineController.OutlineOff();
-
-            //    }
-
-            //    if (itemNameController != null)
-            //    {
-            //        itemNameController.NameOff();
-            //    }
-
-            //}
+           
             target = value;
             
 
@@ -245,6 +228,9 @@ public class Player : MonoBehaviour
                     {
                         transform.LookAt(v);
                         SkillHolyBolt();
+                    }else if(leftSkill==SkillType.BlessedHammer)
+                    {
+                        SkillBlessedHammer();
                     }
                     if (!IsLeftClick)
                     {
@@ -301,6 +287,17 @@ public class Player : MonoBehaviour
         agent.ResetPath();
     }
 
+    private void SkillBlessedHammer()
+    {
+        castSkil = SkillType.BlessedHammer;
+        isMoving = false;
+        animator.SetBool("isMove", isMoving);
+        isAttack = true;
+        animator.SetBool("Skill", isAttack);
+        agent.ResetPath();
+    }
+    
+
     /// <summary>
     /// 플레이어 회전함수
     /// </summary>
@@ -353,7 +350,13 @@ public class Player : MonoBehaviour
         
         if(castSkil==SkillType.HolyBolt)
         {
-            Instantiate(HolyBolt, transform.position + transform.forward+transform.up, transform.rotation);
+            Instantiate(holyBolt, transform.position + transform.forward+transform.up, transform.rotation);
+        }
+
+        if(castSkil==SkillType.BlessedHammer)
+        {
+            GameObject temp= Instantiate(blessdHammer,transform.position+Vector3.forward+Vector3.up+Vector3.right,Quaternion.identity);
+            //temp.GetComponent<BlessedHammer>().SetSpiral(transform.position+Vector3.forward+Vector3.up);
         }
         
     }
@@ -363,7 +366,7 @@ public class Player : MonoBehaviour
        
         if(castSkil==SkillType.HolyBolt)
         {
-            Instantiate(HolyBoltEffect, transform);
+            Instantiate(holyBoltEffect, transform);
         }
     }
 
