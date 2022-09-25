@@ -22,20 +22,22 @@ public enum EquipType
 public enum SkillType
 {
     Attack=0,
+    HolyBolt,
     Prayer,
     Vigor,
     Might,
     Holyfire,
-    HolyBolt,
-    BlessedHammer
+    BlessedHammer,
+    None
 
 }
 
-public enum IdleMotion
+public enum Motion
 {
-    SwordAndShield=0,
-    TwinSword,
-    NoWeapon
+    NoWeapon=0,
+    SwordAndShield,
+    TwinSword
+   
 }
 
 public enum WeaponType

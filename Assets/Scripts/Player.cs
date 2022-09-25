@@ -9,12 +9,14 @@ public class Player : MonoBehaviour
  
     NavMeshAgent agent;
 
-    public AnimatorController anime;
+    public AnimatorController[] animeType;
 
     public float turnSpeed = 30.0f;
     public float moveSpeed = 10.0f;
 
     public GameObject targetCFX;
+    public GameObject HolyBoltEffect;
+    public GameObject HolyBolt;
 
     float distanceRange = 1.5f;
 
@@ -50,8 +52,10 @@ public class Player : MonoBehaviour
 
     float pickUpRange = 3.0f;
 
-    SkillType leftSkill = SkillType.Attack;
+    public SkillType leftSkill = SkillType.Attack;
     SkillType rightSkill = SkillType.Attack;
+
+    SkillType castSkil = SkillType.None;
 
     Player_Skill player_Skill;
 
@@ -77,12 +81,24 @@ public class Player : MonoBehaviour
             {
                 GameObject temp = findPlayerLeftHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
+
+                animator.runtimeAnimatorController = animeType[(int)Motion.NoWeapon];
             }else
             {
                 GameObject temp= Instantiate(leftHand.itemData.equipItem, findPlayerLeftHand.gameObject.transform);
                 temp.transform.localPosition = new(0, 0, 0);
                 temp.transform.localRotation = Quaternion.Euler(leftHand.itemData.leftHandRotation);
+
+                if(leftHand.itemData.weaponType==WeaponType.Shield)
+                {
+                    animator.runtimeAnimatorController = animeType[(int)Motion.SwordAndShield];
+                }else if(leftHand.itemData.weaponType==WeaponType.Sword)
+                {
+                    animator.runtimeAnimatorController = animeType[(int)Motion.TwinSword];
+                }
+                
             }
+            
         }
     }
 
@@ -127,25 +143,25 @@ public class Player : MonoBehaviour
         get { return target; }
         set
         {
-            if (target != null)
-            {
+            //if (target != null)
+            //{
 
-                OutlineController outlineController = target.GetComponent<OutlineController>();
-                ItemNameController itemNameController = target.GetComponent<ItemNameController>();
+            //    OutlineController outlineController = target.GetComponent<OutlineController>();
+            //    ItemNameController itemNameController = target.GetComponent<ItemNameController>();
 
-                if (outlineController != null)
-                {
+            //    if (outlineController != null)
+            //    {
 
-                    outlineController.OutlineOff();
+            //        outlineController.OutlineOff();
 
-                }
+            //    }
 
-                if (itemNameController != null)
-                {
-                    itemNameController.NameOff();
-                }
+            //    if (itemNameController != null)
+            //    {
+            //        itemNameController.NameOff();
+            //    }
 
-            }
+            //}
             target = value;
             
 
@@ -197,6 +213,8 @@ public class Player : MonoBehaviour
 
             isMoving = true;
             animator.SetBool("isMove", isMoving);
+
+
         }
     }
 
@@ -210,6 +228,7 @@ public class Player : MonoBehaviour
 
         if (Target != null)
         {
+
             if (Target.layer == LayerMask.NameToLayer("Enemy") && IsLeftClick)
             {
                 TargetOn = true;
@@ -218,14 +237,21 @@ public class Player : MonoBehaviour
                 if (distance < skillRange * skillRange)
                 {
                     //Debug.Log("스킬발동");
-                    isAttack=true;
-                    targetInterface = Target.GetComponent<IBattle>();
-                    animator.SetBool("Attack", isAttack);
-                    agent.ResetPath();
+                    if(leftSkill==SkillType.Attack)
+                    {
+                        SkillAttack();
+                        
+                    }else if(leftSkill==SkillType.HolyBolt)
+                    {
+                        transform.LookAt(v);
+                        SkillHolyBolt();
+                    }
                     if (!IsLeftClick)
                     {
                         Target = null;
                         TargetOn = false;
+
+
                     }
                 }
                 return;
@@ -253,6 +279,26 @@ public class Player : MonoBehaviour
                 animator.SetBool("isMove", isMoving);
             }
         }
+    }
+
+    private void SkillAttack()
+    {
+        isMoving = false;
+        animator.SetBool("isMove", isMoving);
+        isAttack = true;
+        targetInterface = Target.GetComponent<IBattle>();
+        animator.SetBool("Attack", isAttack);
+        agent.ResetPath();
+    }
+
+    private void SkillHolyBolt()
+    {
+        castSkil = SkillType.HolyBolt;
+        isMoving = false;
+        animator.SetBool("isMove", isMoving);
+        isAttack = true;
+        animator.SetBool("Skill", isAttack);
+        agent.ResetPath();
     }
 
     /// <summary>
@@ -295,6 +341,50 @@ public class Player : MonoBehaviour
         isAttack = false;
         animator.SetBool("Attack", isAttack);
         if(targetInterface != null)
+        {
+            targetInterface.TakeDamage(power);
+            targetInterface = null;
+        }
+    }
+    public void SkillOff()
+    {
+        isAttack=false;
+        animator.SetBool("Skill", isAttack);
+        
+        if(castSkil==SkillType.HolyBolt)
+        {
+            Instantiate(HolyBolt, transform.position + transform.forward+transform.up, transform.rotation);
+        }
+        
+    }
+
+    public void StartSkillEffect()
+    {
+       
+        if(castSkil==SkillType.HolyBolt)
+        {
+            Instantiate(HolyBoltEffect, transform);
+        }
+    }
+
+    public void TwinAttackCombo1()
+    {
+        isAttack = false;
+        animator.SetBool("Attack", isAttack);
+        animator.SetInteger("TwinAttack", 1);
+        if (targetInterface != null)
+        {
+            targetInterface.TakeDamage(power);
+            targetInterface = null;
+        }
+    }
+
+    public void TwinAttackCombo2()
+    {
+        isAttack = false;
+        animator.SetBool("Attack", isAttack);
+        animator.SetInteger("TwinAttack", 0);
+        if (targetInterface != null)
         {
             targetInterface.TakeDamage(power);
             targetInterface = null;

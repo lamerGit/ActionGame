@@ -8,6 +8,7 @@ public class MonsterHpBarController : MonoBehaviour
     Image hpbar;
     TextMeshProUGUI monsterName;
     TextMeshProUGUI monsterType;
+    Enemy targetEnemy;
 
     private void Awake()
     {
@@ -26,6 +27,7 @@ public class MonsterHpBarController : MonoBehaviour
 
     public void Setinfo(Enemy enemy)
     {
+        targetEnemy = enemy;
         hpbar.fillAmount = enemy.Hp / enemy.maxHp;
         monsterName.text = enemy.monsterData.monsterName;
         if(enemy.monsterData.monsterType==MonsterType.beast)
@@ -35,5 +37,14 @@ public class MonsterHpBarController : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    public void TargetOff()
+    {
+        if (targetEnemy != null)
+        {
+            targetEnemy.gameObject.GetComponent<OutlineController>().OutlineOff();
+        }
+
+        gameObject.SetActive(false);
+    }
 
 }

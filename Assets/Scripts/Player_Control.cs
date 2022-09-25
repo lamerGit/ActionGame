@@ -37,6 +37,9 @@ public class Player_Control : MonoBehaviour
         if (!player.TargetOn)
         {
             RayTargetOutline();
+        }else
+        {
+            RayTargetItemNameOff();
         }
         RayTarget();
         if (player.IsLeftClick)
@@ -150,7 +153,7 @@ public class Player_Control : MonoBehaviour
             rayTarget = hitItemName.transform.gameObject;
             rayTarget.GetComponent<ItemNameController>().NameOn();
         }
-        else if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")))
+        else if (Physics.Raycast(ray, out RaycastHit hitItem, 1000.0f, LayerMask.GetMask("Item")) && !player.TargetOn)
         {
 
             rayTarget = hitItem.transform.gameObject;
@@ -186,7 +189,19 @@ public class Player_Control : MonoBehaviour
             }
 
         }
-        monsterHpBar.gameObject.SetActive(false);
+        monsterHpBar.TargetOff();
+    }
+
+    void RayTargetItemNameOff()
+    {
+        if(rayTarget!=null)
+        {
+            ItemNameController itemNameController = rayTarget.GetComponent<ItemNameController>();
+            if (itemNameController != null)
+            {
+                itemNameController.NameOff();
+            }
+        }
     }
 
     private void OnLook(InputAction.CallbackContext obj)
