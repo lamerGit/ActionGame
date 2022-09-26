@@ -9,7 +9,7 @@ public class BlessedHammer : MonoBehaviour
     int maxCnt = 0;
     List<Vector3> point;
 
-    float timer = 0.01f;
+    float timer = 0.001f;
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class BlessedHammer : MonoBehaviour
             timer-=Time.deltaTime;
         }else
         {
-            timer = 0.01f;
+            timer = 0.001f;
             if(startCnt>maxCnt)
             {
                 startCnt--;
@@ -43,6 +43,15 @@ public class BlessedHammer : MonoBehaviour
         }
 
 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Enemy"))
+        {
+            IBattle enemy=other.GetComponent<IBattle>();
+            enemy.TakeDamage(10.0f);
+        }
     }
 
 

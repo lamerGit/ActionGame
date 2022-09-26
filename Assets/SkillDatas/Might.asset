@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85ffe709590572246a4a70e9385aaffb, type: 3}
-  m_Name: Attack
+  m_Name: Might
   m_EditorClassIdentifier: 
-  damage: 15
-  range: 2
-  targetType: 1
+  damage: 0
+  range: 0
+  targetType: 0
   mana: 0
   reauiredLevel: 0
   damagePerLevel: 0

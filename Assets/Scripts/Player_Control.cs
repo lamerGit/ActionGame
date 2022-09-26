@@ -32,6 +32,27 @@ public class Player_Control : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+        if(Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
+            player.RightSkill = SkillType.Prayer;
+        }
+
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
+            player.RightSkill = SkillType.Vigor;
+        }
+
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        {
+            player.RightSkill = SkillType.Might;
+        }
+
+        if (Keyboard.current.digit4Key.wasPressedThisFrame)
+        {
+            player.RightSkill = SkillType.Holyfire;
+        }
+
         mousePos = Mouse.current.position.ReadValue();
 
         if (!player.TargetOn)
@@ -45,14 +66,20 @@ public class Player_Control : MonoBehaviour
         if (player.IsLeftClick)
         {
             mouseRay();
-         
-            player.MovePlayer(targetPos);
 
+            //player.MovePlayer(targetPos);
+            player.BattleAndMoveLeft(targetPos);
             if (!player.IsAttack)
             {
                 player.TurnPlayer(lookDir);
             }
 
+        }
+        if(player.IsRightClick)
+        {
+            mouseRay();
+            player.BattleAndMoveRight(targetPos);
+            
         }
         player.DistaceAcess(targetPos);
         
@@ -66,15 +93,33 @@ public class Player_Control : MonoBehaviour
         //inputActions.Player.Look.performed += OnLook;
         inputActions.Player.LeftClick.performed += OnLeftClick;
         inputActions.Player.LeftClick.canceled += OnLeftClick;
+        inputActions.Player.RightClick.performed += OnRightClick;
+        inputActions.Player.RightClick.canceled+=OnRightClick;
         
     }
 
     private void OnDisable()
     {
+        inputActions.Player.RightClick.canceled -= OnRightClick;
+        inputActions.Player.RightClick.performed -= OnRightClick;
         inputActions.Player.LeftClick.canceled -= OnLeftClick;
         inputActions.Player.LeftClick.performed -= OnLeftClick;
         //inputActions.Player.Look.performed -= OnLook;
         inputActions.Disable();
+    }
+
+    private void OnRightClick(InputAction.CallbackContext obj)
+    {
+        if(obj.performed && !IsPointerOverUIObject())
+        {
+            mouseRay();
+ 
+            player.IsRightClick = true;
+        }else
+        {
+            player.IsRightClick=false;
+            player.TargetOn = false;
+        }
     }
 
     private void OnLeftClick(InputAction.CallbackContext obj)

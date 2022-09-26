@@ -19,6 +19,11 @@ public class Player : MonoBehaviour
     public GameObject holyBolt;
     public GameObject blessdHammer;
 
+    GameObject payerObj;
+    GameObject vigorObj;
+    GameObject mightObj;
+    GameObject holyFireObj;
+
     float distanceRange = 1.5f;
 
     Animator animator;
@@ -27,7 +32,7 @@ public class Player : MonoBehaviour
     bool isLeftClick = false;
     bool isAttack = false;
     bool targetOn = false;
-
+    bool isRightClick = false;
     public bool IsAttack
     {
         get { return isAttack; }
@@ -45,6 +50,12 @@ public class Player : MonoBehaviour
         set { isLeftClick = value; }
     }
 
+    public bool IsRightClick
+    {
+        get { return isRightClick; }
+        set { isRightClick = value; }
+    }
+
 
     GameObject target=null;
     ItemGrid playerInventory;
@@ -54,7 +65,45 @@ public class Player : MonoBehaviour
     float pickUpRange = 3.0f;
 
     public SkillType leftSkill = SkillType.Attack;
-    SkillType rightSkill = SkillType.Attack;
+    public SkillType rightSkill = SkillType.Attack;
+
+    public SkillType RightSkill
+    {
+        set
+        {
+            if(rightSkill==SkillType.Prayer)
+            {
+                payerObj.SetActive(false);
+            }
+            else if (rightSkill == SkillType.Vigor)
+            {
+                vigorObj.SetActive(false);
+            }
+            else if (rightSkill == SkillType.Might)
+            {
+                mightObj.SetActive(false);
+            }
+            else if (rightSkill == SkillType.Holyfire)
+            {
+                holyFireObj.SetActive(false);
+            }
+
+            rightSkill = value;
+            if(rightSkill==SkillType.Prayer)
+            {
+                payerObj.SetActive(true);
+            }else if(rightSkill==SkillType.Vigor)
+            {
+                vigorObj.SetActive(true);
+            }else if(rightSkill==SkillType.Might)
+            {
+                mightObj.SetActive(true);
+            }else if(rightSkill==SkillType.Holyfire)
+            {
+                holyFireObj.SetActive(true);
+            }
+        }
+    }
 
     SkillType castSkil = SkillType.None;
 
@@ -161,6 +210,15 @@ public class Player : MonoBehaviour
         player_Skill = GetComponent<Player_Skill>();
         findPlayerLeftHand = FindObjectOfType<FindPlayerLeftHand>();
         findPlayerRightHand = FindObjectOfType<FindPlayerRightHand>();
+        payerObj = transform.Find("PrayerEffect").gameObject;
+        vigorObj = transform.Find("VigorEffect").gameObject;
+        mightObj = transform.Find("MightEffect").gameObject;
+        holyFireObj = transform.Find("HolyFireEffect").gameObject;
+        payerObj.SetActive(false);
+        vigorObj.SetActive(false);
+        mightObj.SetActive(false);
+        holyFireObj.SetActive(false);
+
     }
 
     /// <summary>
@@ -209,41 +267,6 @@ public class Player : MonoBehaviour
     {
         float distance = (v - transform.position).sqrMagnitude;
 
-        if (Target != null)
-        {
-
-            if (Target.layer == LayerMask.NameToLayer("Enemy") && IsLeftClick)
-            {
-                TargetOn = true;
-
-                float skillRange = player_Skill.skillDatas[(int)leftSkill].range;
-                if (distance < skillRange * skillRange)
-                {
-                    //Debug.Log("스킬발동");
-                    if(leftSkill==SkillType.Attack)
-                    {
-                        SkillAttack();
-                        
-                    }else if(leftSkill==SkillType.HolyBolt)
-                    {
-                        transform.LookAt(v);
-                        SkillHolyBolt();
-                    }else if(leftSkill==SkillType.BlessedHammer)
-                    {
-                        SkillBlessedHammer();
-                    }
-                    if (!IsLeftClick)
-                    {
-                        Target = null;
-                        TargetOn = false;
-
-
-                    }
-                }
-                return;
-            }
-        }
-
         if (distance < distanceRange * distanceRange)
         {
             if(Target!=null)
@@ -264,6 +287,127 @@ public class Player : MonoBehaviour
                 isMoving = false;
                 animator.SetBool("isMove", isMoving);
             }
+        }
+    }
+
+    public void BattleAndMoveLeft(Vector3 v)
+    {
+        float distance = (v - transform.position).sqrMagnitude;
+
+        if (Target != null)
+        {
+
+            if (Target.layer == LayerMask.NameToLayer("Enemy") && IsLeftClick)
+            {
+                TargetOn = true;
+
+                float skillRange = player_Skill.skillDatas[(int)leftSkill].range;
+                if (distance < skillRange * skillRange)
+                {
+                    //Debug.Log("스킬발동");
+                    if (leftSkill == SkillType.Attack)
+                    {
+                        SkillAttack();
+
+                    }
+                    else if (leftSkill == SkillType.HolyBolt)
+                    {
+                        transform.LookAt(v);
+                        SkillHolyBolt();
+                    }
+                    else if (leftSkill == SkillType.BlessedHammer)
+                    {
+                        SkillBlessedHammer();
+                    }
+                    if (!IsLeftClick)
+                    {
+                        Target = null;
+                        TargetOn = false;
+
+
+                    }
+                    return;
+                }
+                else
+                {
+                    MovePlayer(v);
+                }
+               
+            }
+        }
+
+        MovePlayer(v);
+
+    }
+
+    public void BattleAndMoveRight(Vector3 v)
+    {
+        isMoving = false;
+        animator.SetBool("isMove", isMoving);
+        float distance = (v - transform.position).sqrMagnitude;
+
+        if (Target != null)
+        {
+
+            if (Target.layer == LayerMask.NameToLayer("Enemy") && IsRightClick)
+            {
+                TargetOn = true;
+
+                float skillRange = player_Skill.skillDatas[(int)rightSkill].range;
+                if (distance < skillRange * skillRange)
+                {
+                    //Debug.Log("스킬발동");
+                    if (rightSkill == SkillType.Attack)
+                    {
+                        SkillAttack();
+
+                    }
+                    else if (rightSkill == SkillType.HolyBolt)
+                    {
+                        
+                        transform.LookAt(v);
+                        
+                        SkillHolyBolt();
+
+
+                    }
+                    else if (rightSkill == SkillType.BlessedHammer)
+                    {
+                        SkillBlessedHammer();
+                    }
+                    if (!IsRightClick)
+                    {
+                        Target = null;
+                        TargetOn = false;
+
+
+                    }
+                    return;
+                }
+                else
+                {
+                    if (rightSkill == SkillType.Attack)
+                    {
+                        MovePlayer(v);
+                    }
+                }
+
+            }
+        }else
+        {
+            if (rightSkill == SkillType.HolyBolt)
+            {
+                if (!isAttack)
+                {
+                    transform.LookAt(v);
+                }
+                SkillHolyBolt();
+            }
+            else if (rightSkill == SkillType.BlessedHammer)
+            {
+                SkillBlessedHammer();
+            }
+            
         }
     }
 
