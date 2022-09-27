@@ -18,10 +18,27 @@ public class Player_Control : MonoBehaviour
     GameObject rayTarget = null;
     MonsterHpBarController monsterHpBar;
 
+    MainSkillButton[] skillButtons; // 스킬버튼 찾기 0이 왼쪽 1이 오른쪽
     private void Awake()
     {
         inputActions = new PlayerInput();
         monsterHpBar = FindObjectOfType<MonsterHpBarController>();
+        skillButtons=FindObjectsOfType<MainSkillButton>();
+        //FindObjectsOfType은 순서대로 찾아준다는 보장이 없기때문에 아래코드로 정렬해준다.
+        Array.Sort(skillButtons, (a, b) =>
+        {
+            return a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex());
+        });
+
+        skillButtons[0].OnChangeSkill += (skill) =>
+        {
+            player.LeftSkill = skill;
+        };
+
+        skillButtons[1].OnChangeSkill += (skill) =>
+        {
+            player.RightSkill = skill;
+        };
     }
 
     private void Start()
@@ -33,25 +50,25 @@ public class Player_Control : MonoBehaviour
     private void FixedUpdate()
     {
 
-        if(Keyboard.current.digit1Key.wasPressedThisFrame)
-        {
-            player.RightSkill = SkillType.Prayer;
-        }
+        //if(Keyboard.current.digit1Key.wasPressedThisFrame)
+        //{
+        //    player.RightSkill = SkillType.Prayer;
+        //}
 
-        if (Keyboard.current.digit2Key.wasPressedThisFrame)
-        {
-            player.RightSkill = SkillType.Vigor;
-        }
+        //if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        //{
+        //    player.RightSkill = SkillType.Vigor;
+        //}
 
-        if (Keyboard.current.digit3Key.wasPressedThisFrame)
-        {
-            player.RightSkill = SkillType.Might;
-        }
+        //if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        //{
+        //    player.RightSkill = SkillType.Might;
+        //}
 
-        if (Keyboard.current.digit4Key.wasPressedThisFrame)
-        {
-            player.RightSkill = SkillType.Holyfire;
-        }
+        //if (Keyboard.current.digit4Key.wasPressedThisFrame)
+        //{
+        //    player.RightSkill = SkillType.Holyfire;
+        //}
 
         mousePos = Mouse.current.position.ReadValue();
 
@@ -75,11 +92,12 @@ public class Player_Control : MonoBehaviour
             }
 
         }
-        if(player.IsRightClick)
+        if (player.IsRightClick)
         {
+
             mouseRay();
             player.BattleAndMoveRight(targetPos);
-            
+
         }
         player.DistaceAcess(targetPos);
         
@@ -112,9 +130,11 @@ public class Player_Control : MonoBehaviour
     {
         if(obj.performed && !IsPointerOverUIObject())
         {
-            mouseRay();
- 
-            player.IsRightClick = true;
+            if (!player.AuraSkill)
+            {
+                mouseRay();
+                player.IsRightClick = true;
+            }
         }else
         {
             player.IsRightClick=false;
@@ -132,6 +152,8 @@ public class Player_Control : MonoBehaviour
             player.DropItem();
             //isLeftClick = true;
             player.IsLeftClick = true;
+
+            SkillButtonOff();
             
         }else
         {
@@ -271,6 +293,12 @@ public class Player_Control : MonoBehaviour
 
         return results.Count > 0;
 
+    }
+
+    void SkillButtonOff()
+    {
+        skillButtons[0].SubButtonOff();
+        skillButtons[1].SubButtonOff();
     }
 
 }

@@ -37,7 +37,7 @@ public class EquipSlot : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
             slotItem = value;
             if(slotItem==null)
             {
-                Debug.Log(beforWeaponType);
+                //Debug.Log(beforWeaponType);
                 if(beforWeaponType==WeaponType.Shield)
                 {
                     player.LeftHand = null;

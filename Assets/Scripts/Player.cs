@@ -33,6 +33,13 @@ public class Player : MonoBehaviour
     bool isAttack = false;
     bool targetOn = false;
     bool isRightClick = false;
+    bool auraSkill=false;
+
+    public bool AuraSkill
+    {
+        get { return auraSkill; }
+    }
+
     public bool IsAttack
     {
         get { return isAttack; }
@@ -64,43 +71,63 @@ public class Player : MonoBehaviour
 
     float pickUpRange = 3.0f;
 
-    public SkillType leftSkill = SkillType.Attack;
-    public SkillType rightSkill = SkillType.Attack;
+    SkillType leftSkill = SkillType.Attack;
+    SkillType rightSkill = SkillType.Attack;
+
+    public SkillType LeftSkill
+    {
+        set
+        {
+            leftSkill = value;
+        }
+    }
 
     public SkillType RightSkill
     {
+        get { return rightSkill; }
         set
         {
             if(rightSkill==SkillType.Prayer)
             {
                 payerObj.SetActive(false);
+                auraSkill = false;
             }
             else if (rightSkill == SkillType.Vigor)
             {
                 vigorObj.SetActive(false);
+                auraSkill = false;
             }
             else if (rightSkill == SkillType.Might)
             {
                 mightObj.SetActive(false);
+                auraSkill = false;
             }
             else if (rightSkill == SkillType.Holyfire)
             {
                 holyFireObj.SetActive(false);
+                auraSkill = false;
             }
 
             rightSkill = value;
             if(rightSkill==SkillType.Prayer)
             {
                 payerObj.SetActive(true);
-            }else if(rightSkill==SkillType.Vigor)
+                auraSkill = true;
+            }
+            else if(rightSkill==SkillType.Vigor)
             {
                 vigorObj.SetActive(true);
-            }else if(rightSkill==SkillType.Might)
+                auraSkill = true;
+            }
+            else if(rightSkill==SkillType.Might)
             {
                 mightObj.SetActive(true);
-            }else if(rightSkill==SkillType.Holyfire)
+                auraSkill = true;
+            }
+            else if(rightSkill==SkillType.Holyfire)
             {
                 holyFireObj.SetActive(true);
+                auraSkill = true;
             }
         }
     }
@@ -184,6 +211,7 @@ public class Player : MonoBehaviour
 
     FindPlayerLeftHand findPlayerLeftHand;
     FindPlayerRightHand findPlayerRightHand;
+    Rigidbody rigid;
 
     /// <summary>
     /// 현재 내가 선택한 타겟
@@ -201,6 +229,7 @@ public class Player : MonoBehaviour
     }
     private void Awake()
     {
+        rigid = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         agent.speed = moveSpeed;
@@ -274,13 +303,18 @@ public class Player : MonoBehaviour
                 if(Target.layer==LayerMask.NameToLayer("Item"))
                 {
                     PickUpItem(Target);
+                    Target = null;
+                    return;
                 }
                 if(Target.layer==LayerMask.NameToLayer("ItemName"))
                 {
                     PickUpItem(Target.transform.root.gameObject);
+                    Target = null;
+                    return;
                 }
                 
-                Target = null;
+                    
+                
             }
             if (!IsLeftClick)
             {
@@ -307,8 +341,9 @@ public class Player : MonoBehaviour
                     //Debug.Log("스킬발동");
                     if (leftSkill == SkillType.Attack)
                     {
+                        transform.LookAt(v);
+                        rigid.velocity = Vector3.zero;
                         SkillAttack();
-
                     }
                     else if (leftSkill == SkillType.HolyBolt)
                     {
@@ -323,13 +358,14 @@ public class Player : MonoBehaviour
                     {
                         Target = null;
                         TargetOn = false;
-
+                       
 
                     }
                     return;
                 }
                 else
                 {
+                   
                     MovePlayer(v);
                 }
                
@@ -342,8 +378,8 @@ public class Player : MonoBehaviour
 
     public void BattleAndMoveRight(Vector3 v)
     {
-        isMoving = false;
-        animator.SetBool("isMove", isMoving);
+        //isMoving = false;
+        //animator.SetBool("isMove", isMoving);
         float distance = (v - transform.position).sqrMagnitude;
 
         if (Target != null)
@@ -359,6 +395,8 @@ public class Player : MonoBehaviour
                     //Debug.Log("스킬발동");
                     if (rightSkill == SkillType.Attack)
                     {
+                        transform.LookAt(v);
+                        rigid.velocity = Vector3.zero;
                         SkillAttack();
 
                     }
@@ -379,7 +417,7 @@ public class Player : MonoBehaviour
                     {
                         Target = null;
                         TargetOn = false;
-
+                        
 
                     }
                     return;
@@ -395,7 +433,10 @@ public class Player : MonoBehaviour
             }
         }else
         {
-            if (rightSkill == SkillType.HolyBolt)
+            if (rightSkill == SkillType.Attack)
+            {
+                MovePlayer(v);
+            }else if (rightSkill == SkillType.HolyBolt)
             {
                 if (!isAttack)
                 {
@@ -499,7 +540,7 @@ public class Player : MonoBehaviour
 
         if(castSkil==SkillType.BlessedHammer)
         {
-            GameObject temp= Instantiate(blessdHammer,transform.position+Vector3.forward+Vector3.up+Vector3.right,Quaternion.identity);
+            Instantiate(blessdHammer,transform.position+Vector3.forward+Vector3.up,Quaternion.identity);
             //temp.GetComponent<BlessedHammer>().SetSpiral(transform.position+Vector3.forward+Vector3.up);
         }
         
@@ -516,6 +557,7 @@ public class Player : MonoBehaviour
 
     public void TwinAttackCombo1()
     {
+
         isAttack = false;
         animator.SetBool("Attack", isAttack);
         animator.SetInteger("TwinAttack", 1);
