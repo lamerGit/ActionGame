@@ -55,3 +55,10 @@ public enum MonsterType
     demon,
     undead
 }
+
+public enum InventoryType
+{
+    None=0,
+    Player,
+    NPC
+}

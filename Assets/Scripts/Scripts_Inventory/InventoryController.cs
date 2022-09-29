@@ -25,7 +25,7 @@ public class InventoryController : MonoBehaviour
         }
     }
 
-    public EquipSlot selectedEquipSlot;
+    EquipSlot selectedEquipSlot;
 
     public EquipSlot SelectedEquipSlot
     {
@@ -48,6 +48,11 @@ public class InventoryController : MonoBehaviour
     [SerializeField] GameObject itemPrefab; //생성할 아이템의 프리펩
     [SerializeField] Transform canvasTransform; // 인벤토리를 보여줄 캔버스를 넣는 변수
     [SerializeField] DetailInfo detailInfo; //아이템의 정보를 보여줄 스크립트
+    [SerializeField] FailButton buyFailButton;  //돈이 없을때 나타나는 메시지
+    [SerializeField] FailButton inventoryFailButton; // 인벤토리에 자리가 없을때 나타나는 메시지
+    
+    
+    BuyQustion buyQustion; // 아이템 구매시 나타날 오브젝트
 
     Vector2Int oldPosition;
     InventoryItem itemToHighlight;
@@ -60,6 +65,9 @@ public class InventoryController : MonoBehaviour
     EquipControl playerEquipControl;
     Player player;
 
+    ItemGrid tempNPCInventory; // NPC거래용 인벤토리 저장할 변수
+    InventoryItem tempNPCItem; // NPC거래용 인벤토리 아이템 변수
+    Vector2Int tempNPCPosition; // NPC거래용 인벤토리아이템 원래 위치 저장할 변수
     public InventoryItem SelectedItem
     {
         get { return selectedItem; }
@@ -74,6 +82,8 @@ public class InventoryController : MonoBehaviour
         playerEquipControl=FindObjectOfType<EquipControl>();
         playerItemGrid=playerInventory.GetComponent<ItemGrid>();
         player = FindObjectOfType<Player>();
+        buyQustion = FindObjectOfType<BuyQustion>();
+        
     }
 
     private void OnEnable()
@@ -97,7 +107,12 @@ public class InventoryController : MonoBehaviour
         inputActions.InventoryUI.InventoryOnOff.performed -= OnInventoryOnOff;
         inputActions.InventoryUI.Disable();
     }
-
+    private void Start()
+    {
+        buyQustion.YesButton.onClick.AddListener(BuyOk);
+        buyQustion.NoButton.onClick.AddListener(BuyCancel);
+        buyQustion.gameObject.SetActive(false);
+    }
     private void OnInventoryOnOff(InputAction.CallbackContext obj)
     {
         //인벤토리가 off될때 선택하고 있는 인벤토리할당해제 인벤토리 끌때 아이템 들고있으면 들고있는 아이템 부모변경
@@ -444,10 +459,13 @@ public class InventoryController : MonoBehaviour
 
     private void RightMouseButtonPress()
     {
-        if(selectedItem == null && selectedItemGrid!=null ) // 들고있는 아이템이 있고 선택중인 인벤토리가 있을때
+        if(selectedItem == null && selectedItemGrid!=null ) // 들고있는 아이템이 없고 선택중인 인벤토리가 있을때
         {
-            Vector2Int tileGridPosition = GetTileGridPosition();
-            UseItem(tileGridPosition);
+            if (selectedItemGrid.type == InventoryType.Player)
+            {
+                Vector2Int tileGridPosition = GetTileGridPosition();
+                UseItem(tileGridPosition);
+            }
         }
     }
 
@@ -460,21 +478,59 @@ public class InventoryController : MonoBehaviour
     private void LeftMouseButtonPress()
     {
 
-        //아이템기본 이동
-        //Debug.Log($"{tileGridPosition.x},{tileGridPosition.y}");
+        //아이템기본 이동 및 상점 구매 판매
         if (selectedItem == null && selectedItemGrid != null) //들고있는 아이템이 없고 선택중인 인벤토리가 있을때
         {
-            Vector2Int tileGridPosition = GetTileGridPosition();
-            PickUpItem(tileGridPosition);
-            Vector2Int positiononGrid = GetTileGridPosition();
-            inventoryHighlight.SetPosition(selectedItemGrid, selectedItem, positiononGrid.x, positiononGrid.y);
-            detailInfo.OnOff(false);
+            if (selectedItemGrid.type == InventoryType.NPC) //선택한 인벤토리 주인이 NPC일때
+            {
+
+                tempNPCInventory = selectedItemGrid;
+                tempNPCPosition = GetTileGridPosition(tempNPCInventory);
+                tempNPCItem = tempNPCInventory.PickItem(tempNPCPosition.x,tempNPCPosition.y); // NPC 인벤토리에서 아이템 정보를 받아옴
+                if(tempNPCItem != null) // 아이템이 있다면 살건지 안살건지 물어보는 창을 연다.
+                {
+                    buyQustion.gameObject.SetActive(true);
+                    buyQustion.gameObject.GetComponent<RectTransform>().position = Mouse.current.position.ReadValue();
+                }
+
+            }
+            else if (selectedItemGrid.type == InventoryType.Player)
+            {
+                Vector2Int tileGridPosition = GetTileGridPosition();
+                PickUpItem(tileGridPosition);
+                Vector2Int positiononGrid = GetTileGridPosition();
+                inventoryHighlight.SetPosition(selectedItemGrid, selectedItem, positiononGrid.x, positiononGrid.y);
+                detailInfo.OnOff(false);
+            }
 
         }
         else if (selectedItem != null && selectedItemGrid != null) // 들고있는 아이템이 있고 선택중인 인벤토리가 있을때
         {
-            Vector2Int tileGridPosition = GetTileGridPosition();
-            PlaceItem(tileGridPosition);
+            if (selectedItemGrid.type == InventoryType.NPC) //선택한 인벤토리 주인이 NPC일때
+            {
+
+                Vector2Int? posOnGrid = selectedItemGrid.FindSpaceforObject(selectedItem);
+
+                if(posOnGrid!=null)
+                {
+                    InsertItem(selectedItem);
+                    selectedItem = null;
+                }else
+                {
+                    Destroy(selectedItem.gameObject);
+                    selectedItem = null;
+                }
+
+               
+                //Vector2Int tileGridPosition = GetTileGridPosition();
+                //PlaceItem(tileGridPosition);
+            }
+            else if(selectedItemGrid.type==InventoryType.Player)
+            {
+                //Debug.Log("Player");
+                Vector2Int tileGridPosition = GetTileGridPosition();
+                PlaceItem(tileGridPosition);
+            }
 
         }
 
@@ -561,6 +617,9 @@ public class InventoryController : MonoBehaviour
             
         }
     }
+
+   
+
     Vector2 pivot = new Vector2(0, 1.0f);
     private void EquipSlotPlaceItem(InventoryItem slotItem)
     {
@@ -590,6 +649,21 @@ public class InventoryController : MonoBehaviour
         //}
 
         Vector2Int tileGridPosition = selectedItemGrid.GetTileGridPosition(position);
+        return tileGridPosition;
+    }
+
+    private Vector2Int GetTileGridPosition(ItemGrid tempInventory)
+    {
+        //Vector2 position = Input.mousePosition;
+        Vector2 position = Mouse.current.position.ReadValue();
+
+        //if(selectedItem!= null)
+        //{
+        //    position.x -= (selectedItem.itemData.width - 1) * ItemGrid.tileSizeWidth/2;
+        //    position.y +=(selectedItem.itemData.height - 1) * ItemGrid.tileSizeHeight/2;
+        //}
+
+        Vector2Int tileGridPosition = tempInventory.GetTileGridPosition(position);
         return tileGridPosition;
     }
 
@@ -648,5 +722,34 @@ public class InventoryController : MonoBehaviour
             Destroy(useItem.gameObject);
             //Debug.Log("사용할 아이템 있음");
         }
+    }
+
+    private void BuyOk()
+    {
+      
+        Vector2Int? posOnGrid = playerItemGrid.FindSpaceforObject(tempNPCItem); // 플레이어 인벤토리에 자리가 있는지 본다.
+        if (posOnGrid != null) //자리가 있을때
+        {
+            tempNPCItem = tempNPCInventory.PickUpItem(tempNPCPosition.x, tempNPCPosition.y); //자리가 있으면 인벤토리정보에서 뺀다. 
+            InsertItem(tempNPCItem, playerItemGrid); // 플레이어 인벤토리에 넘겨주기
+            buyQustion.gameObject.SetActive(false);
+            //Destroy(tempNPCItem.gameObject);
+            tempNPCInventory = null;
+            tempNPCItem = null;
+            tempNPCPosition = Vector2Int.zero;
+
+        }
+        else  //자리가 없을때
+        {
+            inventoryFailButton.gameObject.SetActive(true);
+            buyQustion.gameObject.SetActive(false);
+            Debug.Log("자리가 없음");
+        }
+    }
+
+
+    private void BuyCancel()
+    {
+        buyQustion.gameObject.SetActive(false);
     }
 }

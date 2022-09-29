@@ -7,6 +7,8 @@ public class ItemGrid : MonoBehaviour
 {
     ///아이템 인벤토리 메인 스크립트 여기서 만들고 InventroyController에서 사용한다.
 
+    public InventoryType type=InventoryType.None;
+
     public const float tileSizeWidth = 64; //타일의 1개의 가로
     public const float tileSizeHeight = 64; // 타일의 1개의 높이
 
@@ -264,7 +266,7 @@ public class ItemGrid : MonoBehaviour
     /// 아이템을 집는 함수,
     /// toReturn에 inventoryItemSlot[x,y]값을 넣는다
     /// inventoryItemSlot[x,y]에 값이 있으면
-    /// CleanGridReference을 이용행 inventoryItemSlot[x,y]에 있던 아이템의 크기만큼 inventoryItemSlot을 비워준다.
+    /// CleanGridReference을 이용해 inventoryItemSlot[x,y]에 있던 아이템의 크기만큼 inventoryItemSlot을 비워준다.
     /// </summary>
     /// <param name="x">인벤토리의 x값</param>
     /// <param name="y">인벤토리의 y값</param>
@@ -281,6 +283,23 @@ public class ItemGrid : MonoBehaviour
         
 
        
+        return toReturn;
+    }
+
+    /// <summary>
+    /// 인벤토리에 정보를 삭제하지 않고 아이템을 집는함수 아이템정보가 인벤토리에 계속 남아있어서 주의해야한다.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public InventoryItem PickItem(int x,int y)
+    {
+        InventoryItem toReturn = inventoryItemSlot[x, y];
+        if(toReturn==null)
+        {
+            return null;
+        }
+
         return toReturn;
     }
 
