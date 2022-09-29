@@ -13,8 +13,6 @@ public interface IBattle
         get; set;
     }
 
-    Action<Enemy> onHealthChangeEnemy { get; set; }
-
     void TakeDamage(float damage);
    
 }

@@ -42,6 +42,7 @@ public class MonsterHpBarController : MonoBehaviour
         if (targetEnemy != null)
         {
             targetEnemy.gameObject.GetComponent<OutlineController>().OutlineOff();
+            targetEnemy.onHealthChangeEnemy = null;
         }
 
         gameObject.SetActive(false);

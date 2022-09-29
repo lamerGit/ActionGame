@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour ,IBattle
 {
  
     NavMeshAgent agent;
@@ -18,6 +19,7 @@ public class Player : MonoBehaviour
     public GameObject holyBoltEffect;
     public GameObject holyBolt;
     public GameObject blessdHammer;
+    public GameObject holyFire;
 
     GameObject payerObj;
     GameObject vigorObj;
@@ -34,6 +36,20 @@ public class Player : MonoBehaviour
     bool targetOn = false;
     bool isRightClick = false;
     bool auraSkill=false;
+
+    float MoveSpeed
+    {
+        get
+        {
+            return moveSpeed;
+        }
+        set
+        {
+            moveSpeed = value;
+            agent.speed = moveSpeed;
+            agent.acceleration = moveSpeed * moveSpeed;
+        }
+    }
 
     public bool AuraSkill
     {
@@ -89,21 +105,25 @@ public class Player : MonoBehaviour
         {
             if(rightSkill==SkillType.Prayer)
             {
+                StopCoroutine(SkillPrayer());
                 payerObj.SetActive(false);
                 auraSkill = false;
             }
             else if (rightSkill == SkillType.Vigor)
             {
+                SkillVigor(false);
                 vigorObj.SetActive(false);
                 auraSkill = false;
             }
             else if (rightSkill == SkillType.Might)
             {
+                SkillMight(false);
                 mightObj.SetActive(false);
                 auraSkill = false;
             }
             else if (rightSkill == SkillType.Holyfire)
             {
+                StopCoroutine(SkillHolyFire());
                 holyFireObj.SetActive(false);
                 auraSkill = false;
             }
@@ -111,21 +131,25 @@ public class Player : MonoBehaviour
             rightSkill = value;
             if(rightSkill==SkillType.Prayer)
             {
+                StartCoroutine(SkillPrayer());
                 payerObj.SetActive(true);
                 auraSkill = true;
             }
             else if(rightSkill==SkillType.Vigor)
             {
+                SkillVigor(true);
                 vigorObj.SetActive(true);
                 auraSkill = true;
             }
             else if(rightSkill==SkillType.Might)
             {
+                SkillMight(true);
                 mightObj.SetActive(true);
                 auraSkill = true;
             }
             else if(rightSkill==SkillType.Holyfire)
             {
+                StartCoroutine(SkillHolyFire());
                 holyFireObj.SetActive(true);
                 auraSkill = true;
             }
@@ -213,6 +237,8 @@ public class Player : MonoBehaviour
     FindPlayerRightHand findPlayerRightHand;
     Rigidbody rigid;
 
+    PlayerGlobeController[] playerHpMp;
+
     /// <summary>
     /// 현재 내가 선택한 타겟
     /// </summary>
@@ -227,6 +253,8 @@ public class Player : MonoBehaviour
 
         }
     }
+
+    
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -247,6 +275,18 @@ public class Player : MonoBehaviour
         vigorObj.SetActive(false);
         mightObj.SetActive(false);
         holyFireObj.SetActive(false);
+
+        playerHpMp = FindObjectsOfType<PlayerGlobeController>();
+        //FindObjectsOfType은 순서대로 찾아준다는 보장이 없기때문에 아래코드로 정렬해준다. 0은 hp 1은 mp이다
+        Array.Sort(playerHpMp, (a, b) =>
+        {
+            return a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex());
+        });
+
+        onHealthChangePlayer += (ratio) =>
+        {
+            playerHpMp[0].GloveChange(ratio);
+        };
 
     }
 
@@ -540,7 +580,7 @@ public class Player : MonoBehaviour
 
         if(castSkil==SkillType.BlessedHammer)
         {
-            Instantiate(blessdHammer,transform.position+Vector3.forward+Vector3.up,Quaternion.identity);
+            Instantiate(blessdHammer,transform.position+Vector3.forward+Vector3.up+Vector3.left,Quaternion.identity);
             //temp.GetComponent<BlessedHammer>().SetSpiral(transform.position+Vector3.forward+Vector3.up);
         }
         
@@ -577,6 +617,84 @@ public class Player : MonoBehaviour
         {
             targetInterface.TakeDamage(power);
             targetInterface = null;
+        }
+    }
+
+    private float hp = 200;
+    private float maxhp = 200;
+    public float Hp
+    {
+        get => hp; 
+        set
+        {
+            hp = Mathf.Clamp( value,0,maxhp);
+
+            Debug.Log($"{hp}/{maxhp}");
+            onHealthChangePlayer?.Invoke(hp/maxhp);
+        }
+    }
+    public float maxHp
+    {
+        get => maxhp; 
+        set
+        {
+            maxhp = value;
+        }
+    }
+    public Action<float> onHealthChangePlayer { get; set; }
+
+    public void TakeDamage(float damage)
+    {
+        
+    }
+
+    IEnumerator SkillPrayer()
+    {
+        while(rightSkill==SkillType.Prayer)
+        {
+            Hp += 10.0f;
+            yield return new WaitForSeconds(1.0f);
+        }
+    }
+
+    void SkillVigor(bool onOff)
+    {
+        if (onOff)
+        {
+            MoveSpeed += 10.0f;
+        }else
+        {
+            MoveSpeed -= 10.0f;
+        }
+    }
+
+    void SkillMight(bool onOff)
+    {
+        if(onOff)
+        {
+            power += 20.0f;
+        }else
+        {
+            power -= 20.0f;
+        }
+    }
+
+    IEnumerator SkillHolyFire()
+    {
+        while(rightSkill==SkillType.Holyfire)
+        {
+            Collider[] hitEnemy = Physics.OverlapSphere(transform.position, 15.0f, LayerMask.GetMask("Enemy"));
+            if(hitEnemy.Length > 0)
+            {
+                foreach(Collider enemy in hitEnemy)
+                {
+                    Instantiate(holyFire,enemy.transform.position,Quaternion.identity);
+                    IBattle battle = enemy.gameObject.GetComponent<IBattle>();
+                    battle.TakeDamage(20.0f);
+                }
+            }
+
+            yield return new WaitForSeconds(2.0f);
         }
     }
 }

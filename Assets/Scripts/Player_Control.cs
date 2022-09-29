@@ -50,25 +50,12 @@ public class Player_Control : MonoBehaviour
     private void FixedUpdate()
     {
 
-        //if(Keyboard.current.digit1Key.wasPressedThisFrame)
-        //{
-        //    player.RightSkill = SkillType.Prayer;
-        //}
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
+            player.Hp -= 10.0f;
+        }
 
-        //if (Keyboard.current.digit2Key.wasPressedThisFrame)
-        //{
-        //    player.RightSkill = SkillType.Vigor;
-        //}
 
-        //if (Keyboard.current.digit3Key.wasPressedThisFrame)
-        //{
-        //    player.RightSkill = SkillType.Might;
-        //}
-
-        //if (Keyboard.current.digit4Key.wasPressedThisFrame)
-        //{
-        //    player.RightSkill = SkillType.Holyfire;
-        //}
 
         mousePos = Mouse.current.position.ReadValue();
 
@@ -88,7 +75,7 @@ public class Player_Control : MonoBehaviour
             player.BattleAndMoveLeft(targetPos);
             if (!player.IsAttack)
             {
-                player.TurnPlayer(lookDir);
+               // player.TurnPlayer(lookDir);
             }
 
         }
