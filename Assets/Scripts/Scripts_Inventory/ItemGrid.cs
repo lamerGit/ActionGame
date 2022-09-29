@@ -284,6 +284,21 @@ public class ItemGrid : MonoBehaviour
         return toReturn;
     }
 
+    public InventoryItem UseInventoryItem(int x,int y)
+    {
+        InventoryItem toReturn=inventoryItemSlot[x, y];
+        if(toReturn==null || toReturn.itemData.equipType!=EquipType.Use)
+        {
+            return null;
+        }
+        if(toReturn.itemData.equipType==EquipType.Use)
+        {
+            CleanGridReference(toReturn);
+        }
+
+        return toReturn;
+    }
+
     /// <summary>
     /// 인벤토리에서 아이템을 비우는 함수,
     /// 아이템의 크기만큼 inventoryItemSlot을 null로 해준다

@@ -139,6 +139,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""97fd76ac-c5bf-4934-a38b-8b3b18c70cbf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -194,6 +203,17 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""LeftClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d5d0e62-8048-4433-acd3-d57c9b94c5c4"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RightClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -303,6 +323,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_InventoryUI_CreateEmptyItem = m_InventoryUI.FindAction("CreateEmptyItem", throwIfNotFound: true);
         m_InventoryUI_ItemRotate = m_InventoryUI.FindAction("ItemRotate", throwIfNotFound: true);
         m_InventoryUI_LeftClick = m_InventoryUI.FindAction("LeftClick", throwIfNotFound: true);
+        m_InventoryUI_RightClick = m_InventoryUI.FindAction("RightClick", throwIfNotFound: true);
         // GameManager
         m_GameManager = asset.FindActionMap("GameManager", throwIfNotFound: true);
         m_GameManager_ItemNameOnOff = m_GameManager.FindAction("ItemNameOnOff", throwIfNotFound: true);
@@ -419,6 +440,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_InventoryUI_CreateEmptyItem;
     private readonly InputAction m_InventoryUI_ItemRotate;
     private readonly InputAction m_InventoryUI_LeftClick;
+    private readonly InputAction m_InventoryUI_RightClick;
     public struct InventoryUIActions
     {
         private @PlayerInput m_Wrapper;
@@ -428,6 +450,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @CreateEmptyItem => m_Wrapper.m_InventoryUI_CreateEmptyItem;
         public InputAction @ItemRotate => m_Wrapper.m_InventoryUI_ItemRotate;
         public InputAction @LeftClick => m_Wrapper.m_InventoryUI_LeftClick;
+        public InputAction @RightClick => m_Wrapper.m_InventoryUI_RightClick;
         public InputActionMap Get() { return m_Wrapper.m_InventoryUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -452,6 +475,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @LeftClick.started -= m_Wrapper.m_InventoryUIActionsCallbackInterface.OnLeftClick;
                 @LeftClick.performed -= m_Wrapper.m_InventoryUIActionsCallbackInterface.OnLeftClick;
                 @LeftClick.canceled -= m_Wrapper.m_InventoryUIActionsCallbackInterface.OnLeftClick;
+                @RightClick.started -= m_Wrapper.m_InventoryUIActionsCallbackInterface.OnRightClick;
+                @RightClick.performed -= m_Wrapper.m_InventoryUIActionsCallbackInterface.OnRightClick;
+                @RightClick.canceled -= m_Wrapper.m_InventoryUIActionsCallbackInterface.OnRightClick;
             }
             m_Wrapper.m_InventoryUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -471,6 +497,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @LeftClick.started += instance.OnLeftClick;
                 @LeftClick.performed += instance.OnLeftClick;
                 @LeftClick.canceled += instance.OnLeftClick;
+                @RightClick.started += instance.OnRightClick;
+                @RightClick.performed += instance.OnRightClick;
+                @RightClick.canceled += instance.OnRightClick;
             }
         }
     }
@@ -566,6 +595,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnCreateEmptyItem(InputAction.CallbackContext context);
         void OnItemRotate(InputAction.CallbackContext context);
         void OnLeftClick(InputAction.CallbackContext context);
+        void OnRightClick(InputAction.CallbackContext context);
     }
     public interface IGameManagerActions
     {

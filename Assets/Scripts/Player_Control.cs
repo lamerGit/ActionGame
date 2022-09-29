@@ -55,6 +55,11 @@ public class Player_Control : MonoBehaviour
             player.Hp -= 10.0f;
         }
 
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
+            player.Mp -= 10.0f;
+        }
+
 
 
         mousePos = Mouse.current.position.ReadValue();

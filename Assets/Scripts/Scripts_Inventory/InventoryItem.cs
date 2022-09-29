@@ -72,4 +72,15 @@ public class InventoryItem : MonoBehaviour
         RectTransform rectTransform=GetComponent<RectTransform>();
         rectTransform.rotation = Quaternion.Euler(0, 0, rotated == true ? 90f : 0f);
     }
+
+    public void UseItem(IBattle target)
+    {
+        if(itemData.itemID==(int)ItemIDCode.Potion)
+        {
+            target.TakeHeal(50.0f);
+        }else if(itemData.itemID==(int)ItemIDCode.Potion_Mana)
+        {
+            target.TakeMana(50.0f);
+        }
+    }
 }

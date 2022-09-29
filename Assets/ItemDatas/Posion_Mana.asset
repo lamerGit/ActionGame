@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37ab3547a2eeb224ca42f4f9d40eaba6, type: 3}
-  m_Name: Posion
+  m_Name: Posion_Mana
   m_EditorClassIdentifier: 
   width: 1
   height: 1
-  itemIcon: {fileID: 21300000, guid: 117b17facff65dc42b1b57deb7c21551, type: 3}
-  itemName: "\uCCB4\uB825\uD3EC\uC158"
-  itemPrefab: {fileID: 3598102446093194438, guid: 4b6a118149bb12742a5acb93ef0526d3, type: 3}
-  itemID: 3
+  itemIcon: {fileID: 21300000, guid: b7f77607c82ea4142a2070c0e37e1756, type: 3}
+  itemName: "\uB9C8\uB098\uD3EC\uC158"
+  itemPrefab: {fileID: 8525402408609967597, guid: b917012695155654dba977f77d9cfdf6, type: 3}
+  itemID: 5
   equipType: 3
   equipItem: {fileID: 0}
   leftHandRotation: {x: 0, y: 0, z: 0}

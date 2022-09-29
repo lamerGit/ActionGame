@@ -14,5 +14,8 @@ public interface IBattle
     }
 
     void TakeDamage(float damage);
+    void TakeHeal(float heal);
+
+    void TakeMana(float mana);
    
 }

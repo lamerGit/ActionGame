@@ -40,4 +40,14 @@ public class Enemy : MonoBehaviour, IBattle
         Hp-=damage;
         Debug.Log($"{hp}/{maxHp}");
     }
+
+    public void TakeHeal(float heal)
+    {
+        
+    }
+
+    public void TakeMana(float mana)
+    {
+   
+    }
 }

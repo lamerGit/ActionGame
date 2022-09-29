@@ -58,6 +58,7 @@ public class InventoryController : MonoBehaviour
     FindPlayerInventory playerInventory;
     ItemGrid playerItemGrid;
     EquipControl playerEquipControl;
+    Player player;
 
     public InventoryItem SelectedItem
     {
@@ -72,6 +73,7 @@ public class InventoryController : MonoBehaviour
         playerInventory=FindObjectOfType<FindPlayerInventory>();
         playerEquipControl=FindObjectOfType<EquipControl>();
         playerItemGrid=playerInventory.GetComponent<ItemGrid>();
+        player = FindObjectOfType<Player>();
     }
 
     private void OnEnable()
@@ -82,10 +84,12 @@ public class InventoryController : MonoBehaviour
         inputActions.InventoryUI.CreateEmptyItem.performed += OnCreateEmptyItem;
         inputActions.InventoryUI.ItemRotate.performed += OnItemRotate;
         inputActions.InventoryUI.LeftClick.performed += OnLeftClick;
+        inputActions.InventoryUI.RightClick.performed += OnRightClick;
     }
 
     private void OnDisable()
     {
+        inputActions.InventoryUI.RightClick.performed -= OnRightClick;
         inputActions.InventoryUI.LeftClick.performed -= OnLeftClick;
         inputActions.InventoryUI.ItemRotate.performed -= OnItemRotate;
         inputActions.InventoryUI.CreateEmptyItem.performed -= OnCreateEmptyItem;
@@ -145,6 +149,16 @@ public class InventoryController : MonoBehaviour
             LeftMouseButtonPress();
         }
     }
+
+
+    private void OnRightClick(InputAction.CallbackContext obj)
+    {
+        if(selectedItemGrid!=null)
+        {
+            RightMouseButtonPress();
+        }
+    }
+
 
     private void Update()
     {
@@ -411,7 +425,7 @@ public class InventoryController : MonoBehaviour
     /// </summary>
     private void ItemIconDrag()
     {
-        if (selectedItem != null)
+        if (selectedItem != null && rectTransform!=null)
         {
             if (!selectedItem.rotated)
             {
@@ -427,6 +441,17 @@ public class InventoryController : MonoBehaviour
         }
     }
 
+
+    private void RightMouseButtonPress()
+    {
+        if(selectedItem == null && selectedItemGrid!=null ) // 들고있는 아이템이 있고 선택중인 인벤토리가 있을때
+        {
+            Vector2Int tileGridPosition = GetTileGridPosition();
+            UseItem(tileGridPosition);
+        }
+    }
+
+
     /// <summary>
     /// 마우스위치를 통해 몇번째 타일을 선택했는지 확인하고 현재 들고있는 아이템이 없다면 그냥들고
     /// 아이템이 있다면 PlaceItem을 통해 아이템을 교채해준다.
@@ -435,9 +460,9 @@ public class InventoryController : MonoBehaviour
     private void LeftMouseButtonPress()
     {
 
-        
+        //아이템기본 이동
         //Debug.Log($"{tileGridPosition.x},{tileGridPosition.y}");
-        if (selectedItem == null && selectedItemGrid != null)
+        if (selectedItem == null && selectedItemGrid != null) //들고있는 아이템이 없고 선택중인 인벤토리가 있을때
         {
             Vector2Int tileGridPosition = GetTileGridPosition();
             PickUpItem(tileGridPosition);
@@ -446,13 +471,15 @@ public class InventoryController : MonoBehaviour
             detailInfo.OnOff(false);
 
         }
-        else if (selectedItem != null && selectedItemGrid != null)
+        else if (selectedItem != null && selectedItemGrid != null) // 들고있는 아이템이 있고 선택중인 인벤토리가 있을때
         {
             Vector2Int tileGridPosition = GetTileGridPosition();
             PlaceItem(tileGridPosition);
 
         }
 
+
+        //장비슬롯에 아이템 장비할때
         if (selectedEquipSlot!=null)
         {
             if (selectedEquipSlot.SlotItem == null && selectedItem != null) //장비슬롯에 아이템이없고 아이템을 들고있을때
@@ -608,5 +635,18 @@ public class InventoryController : MonoBehaviour
             rectTransform.SetAsLastSibling();
         }
 
+    }
+
+    private void UseItem(Vector2Int tileGridPosition)
+    {
+        
+
+        InventoryItem useItem = selectedItemGrid.UseInventoryItem(tileGridPosition.x, tileGridPosition.y);
+        if(useItem != null)
+        {
+            useItem.UseItem(player.GetComponent<IBattle>());
+            Destroy(useItem.gameObject);
+            //Debug.Log("사용할 아이템 있음");
+        }
     }
 }

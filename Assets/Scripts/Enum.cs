@@ -8,7 +8,8 @@ public enum ItemIDCode
     Sword,
     Armor,
     Potion,
-    Shield
+    Shield,
+    Potion_Mana
 }
 
 public enum EquipType
@@ -16,7 +17,8 @@ public enum EquipType
     LeftHand=0,
     RightHand,
     Armor,
-    None
+    None,
+    Use
 }
 
 public enum SkillType

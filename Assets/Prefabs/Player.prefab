@@ -1547,10 +1547,7 @@ Animator:
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'head'\n\tTransform 'head'\n\tFrom animation
-    clip 'Idle_TwinSword'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
@@ -1627,8 +1624,7 @@ MonoBehaviour:
   holyBoltEffect: {fileID: 1918476138427834, guid: 6b9b18de98416b7458609ebe7535a13a, type: 3}
   holyBolt: {fileID: 6867671820736462611, guid: af8e4eab36e1167468593b282981953d, type: 3}
   blessdHammer: {fileID: 191102, guid: b88a82ebb473b9042a90c9fd3cc9802f, type: 3}
-  leftSkill: 2
-  rightSkill: 0
+  holyFire: {fileID: 6294293624926949871, guid: 28f9ee79efc61e9439af2cc6d0f7e7f3, type: 3}
 --- !u!114 &5588696279657149874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1657,6 +1653,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8f3dff78b8945004f933c3d793458d62, type: 2}
   - {fileID: 11400000, guid: 45db761554c7dce468022b28ceb94f88, type: 2}
   - {fileID: 11400000, guid: 9ed94185542c97c42a55fb697dd828cf, type: 2}
+  - {fileID: 11400000, guid: 79b2f7fa01c725f4ca03e054b65777ea, type: 2}
+  - {fileID: 11400000, guid: 70bab40fc0fedd943b43cb2c7165baa2, type: 2}
+  - {fileID: 11400000, guid: 3a19b8e091176b24991ab228af2b8326, type: 2}
+  - {fileID: 11400000, guid: 213b065066b718c4fb58f3df37f1c921, type: 2}
 --- !u!1 &5275870893053706016
 GameObject:
   m_ObjectHideFlags: 0
@@ -2867,7 +2867,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4322562971931584, guid: 3fd167b48acffdd4383e7888b78cc558, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 4322562971931584, guid: 3fd167b48acffdd4383e7888b78cc558, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2933,7 +2933,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: ad2770311b0e14e478fd5a8594902a80, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: ad2770311b0e14e478fd5a8594902a80, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2999,7 +2999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4037254154905776, guid: 1e7937fb6d73a9f4f897a55fe6ef6658, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 4037254154905776, guid: 1e7937fb6d73a9f4f897a55fe6ef6658, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3065,7 +3065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4036711600329176, guid: 21b6ba82ad58ffc47b7b5e0e6e556e66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 4036711600329176, guid: 21b6ba82ad58ffc47b7b5e0e6e556e66, type: 3}
       propertyPath: m_LocalPosition.z

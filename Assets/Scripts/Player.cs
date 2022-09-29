@@ -5,9 +5,9 @@ using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Player : MonoBehaviour ,IBattle
+public class Player : MonoBehaviour, IBattle
 {
- 
+
     NavMeshAgent agent;
 
     public AnimatorController[] animeType;
@@ -35,7 +35,7 @@ public class Player : MonoBehaviour ,IBattle
     bool isAttack = false;
     bool targetOn = false;
     bool isRightClick = false;
-    bool auraSkill=false;
+    bool auraSkill = false;
 
     float MoveSpeed
     {
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour ,IBattle
     }
 
 
-    GameObject target=null;
+    GameObject target = null;
     ItemGrid playerInventory;
     InventoryController inventoryController;
     IBattle targetInterface;
@@ -103,7 +103,7 @@ public class Player : MonoBehaviour ,IBattle
         get { return rightSkill; }
         set
         {
-            if(rightSkill==SkillType.Prayer)
+            if (rightSkill == SkillType.Prayer)
             {
                 StopCoroutine(SkillPrayer());
                 payerObj.SetActive(false);
@@ -129,25 +129,25 @@ public class Player : MonoBehaviour ,IBattle
             }
 
             rightSkill = value;
-            if(rightSkill==SkillType.Prayer)
+            if (rightSkill == SkillType.Prayer)
             {
                 StartCoroutine(SkillPrayer());
                 payerObj.SetActive(true);
                 auraSkill = true;
             }
-            else if(rightSkill==SkillType.Vigor)
+            else if (rightSkill == SkillType.Vigor)
             {
                 SkillVigor(true);
                 vigorObj.SetActive(true);
                 auraSkill = true;
             }
-            else if(rightSkill==SkillType.Might)
+            else if (rightSkill == SkillType.Might)
             {
                 SkillMight(true);
                 mightObj.SetActive(true);
                 auraSkill = true;
             }
-            else if(rightSkill==SkillType.Holyfire)
+            else if (rightSkill == SkillType.Holyfire)
             {
                 StartCoroutine(SkillHolyFire());
                 holyFireObj.SetActive(true);
@@ -171,35 +171,35 @@ public class Player : MonoBehaviour ,IBattle
         get { return leftHand; }
         set
         {
-            if(leftHand!=null)
+            if (leftHand != null)
             {
                 GameObject temp = findPlayerLeftHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
             }
-            
+
             leftHand = value;
-            if(leftHand==null)
+            if (leftHand == null)
             {
                 GameObject temp = findPlayerLeftHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
 
                 animator.runtimeAnimatorController = animeType[(int)Motion.NoWeapon];
-            }else
+            } else
             {
-                GameObject temp= Instantiate(leftHand.itemData.equipItem, findPlayerLeftHand.gameObject.transform);
+                GameObject temp = Instantiate(leftHand.itemData.equipItem, findPlayerLeftHand.gameObject.transform);
                 temp.transform.localPosition = new(0, 0, 0);
                 temp.transform.localRotation = Quaternion.Euler(leftHand.itemData.leftHandRotation);
 
-                if(leftHand.itemData.weaponType==WeaponType.Shield)
+                if (leftHand.itemData.weaponType == WeaponType.Shield)
                 {
                     animator.runtimeAnimatorController = animeType[(int)Motion.SwordAndShield];
-                }else if(leftHand.itemData.weaponType==WeaponType.Sword)
+                } else if (leftHand.itemData.weaponType == WeaponType.Sword)
                 {
                     animator.runtimeAnimatorController = animeType[(int)Motion.TwinSword];
                 }
-                
+
             }
-            
+
         }
     }
 
@@ -208,24 +208,24 @@ public class Player : MonoBehaviour ,IBattle
         get { return rightHand; }
         set
         {
-            if(rightHand!=null)
+            if (rightHand != null)
             {
                 GameObject temp = findPlayerRightHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
             }
-           
+
             rightHand = value;
-            if(rightHand==null)
+            if (rightHand == null)
             {
                 GameObject temp = findPlayerRightHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
-            }else
+            } else
             {
                 GameObject temp = Instantiate(rightHand.itemData.equipItem, findPlayerRightHand.gameObject.transform);
                 temp.transform.localPosition = new(0, 0, 0);
                 temp.transform.localRotation = Quaternion.Euler(rightHand.itemData.rightHandRotation);
 
-                
+
             }
         }
     }
@@ -247,14 +247,14 @@ public class Player : MonoBehaviour ,IBattle
         get { return target; }
         set
         {
-           
+
             target = value;
-            
+
 
         }
     }
 
-    
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -262,7 +262,7 @@ public class Player : MonoBehaviour ,IBattle
         animator = GetComponent<Animator>();
         agent.speed = moveSpeed;
         agent.acceleration = moveSpeed * moveSpeed;
-        playerInventory=FindObjectOfType<FindPlayerInventory>().GetComponent<ItemGrid>();
+        playerInventory = FindObjectOfType<FindPlayerInventory>().GetComponent<ItemGrid>();
         inventoryController = FindObjectOfType<InventoryController>();
         player_Skill = GetComponent<Player_Skill>();
         findPlayerLeftHand = FindObjectOfType<FindPlayerLeftHand>();
@@ -287,6 +287,12 @@ public class Player : MonoBehaviour ,IBattle
         {
             playerHpMp[0].GloveChange(ratio);
         };
+
+        onManaChangePlayer += (ratio) =>
+        {
+            playerHpMp[1].GloveChange(ratio);
+        };
+     
 
     }
 
@@ -338,23 +344,23 @@ public class Player : MonoBehaviour ,IBattle
 
         if (distance < distanceRange * distanceRange)
         {
-            if(Target!=null)
+            if (Target != null)
             {
-                if(Target.layer==LayerMask.NameToLayer("Item"))
+                if (Target.layer == LayerMask.NameToLayer("Item"))
                 {
                     PickUpItem(Target);
                     Target = null;
                     return;
                 }
-                if(Target.layer==LayerMask.NameToLayer("ItemName"))
+                if (Target.layer == LayerMask.NameToLayer("ItemName"))
                 {
                     PickUpItem(Target.transform.root.gameObject);
                     Target = null;
                     return;
                 }
-                
-                    
-                
+
+
+
             }
             if (!IsLeftClick)
             {
@@ -398,17 +404,17 @@ public class Player : MonoBehaviour ,IBattle
                     {
                         Target = null;
                         TargetOn = false;
-                       
+
 
                     }
                     return;
                 }
                 else
                 {
-                   
+
                     MovePlayer(v);
                 }
-               
+
             }
         }
 
@@ -442,9 +448,9 @@ public class Player : MonoBehaviour ,IBattle
                     }
                     else if (rightSkill == SkillType.HolyBolt)
                     {
-                        
+
                         transform.LookAt(v);
-                        
+
                         SkillHolyBolt();
 
 
@@ -457,7 +463,7 @@ public class Player : MonoBehaviour ,IBattle
                     {
                         Target = null;
                         TargetOn = false;
-                        
+
 
                     }
                     return;
@@ -471,12 +477,12 @@ public class Player : MonoBehaviour ,IBattle
                 }
 
             }
-        }else
+        } else
         {
             if (rightSkill == SkillType.Attack)
             {
                 MovePlayer(v);
-            }else if (rightSkill == SkillType.HolyBolt)
+            } else if (rightSkill == SkillType.HolyBolt)
             {
                 if (!isAttack)
                 {
@@ -488,7 +494,7 @@ public class Player : MonoBehaviour ,IBattle
             {
                 SkillBlessedHammer();
             }
-            
+
         }
     }
 
@@ -521,7 +527,7 @@ public class Player : MonoBehaviour ,IBattle
         animator.SetBool("Skill", isAttack);
         agent.ResetPath();
     }
-    
+
 
     /// <summary>
     /// 플레이어 회전함수
@@ -543,7 +549,7 @@ public class Player : MonoBehaviour ,IBattle
     {
         Vector3 cfxVector = t;
         cfxVector.y = 0.8f;
-        Instantiate(targetCFX, cfxVector,targetCFX.transform.rotation);
+        Instantiate(targetCFX, cfxVector, targetCFX.transform.rotation);
     }
 
     /// <summary>
@@ -553,7 +559,7 @@ public class Player : MonoBehaviour ,IBattle
     {
         if (inventoryController.SelectedItem != null)
         {
-            ItemFactory.MakeItem(inventoryController.SelectedItem.itemData.itemID,transform.position,true);
+            ItemFactory.MakeItem(inventoryController.SelectedItem.itemData.itemID, transform.position, true);
             Destroy(inventoryController.SelectedItem.gameObject);
         }
     }
@@ -562,7 +568,7 @@ public class Player : MonoBehaviour ,IBattle
     {
         isAttack = false;
         animator.SetBool("Attack", isAttack);
-        if(targetInterface != null)
+        if (targetInterface != null)
         {
             targetInterface.TakeDamage(power);
             targetInterface = null;
@@ -570,26 +576,26 @@ public class Player : MonoBehaviour ,IBattle
     }
     public void SkillOff()
     {
-        isAttack=false;
+        isAttack = false;
         animator.SetBool("Skill", isAttack);
-        
-        if(castSkil==SkillType.HolyBolt)
+
+        if (castSkil == SkillType.HolyBolt)
         {
-            Instantiate(holyBolt, transform.position + transform.forward+transform.up, transform.rotation);
+            Instantiate(holyBolt, transform.position + transform.forward + transform.up, transform.rotation);
         }
 
-        if(castSkil==SkillType.BlessedHammer)
+        if (castSkil == SkillType.BlessedHammer)
         {
-            Instantiate(blessdHammer,transform.position+Vector3.forward+Vector3.up+Vector3.left,Quaternion.identity);
+            Instantiate(blessdHammer, transform.position + Vector3.forward + Vector3.up + Vector3.left, Quaternion.identity);
             //temp.GetComponent<BlessedHammer>().SetSpiral(transform.position+Vector3.forward+Vector3.up);
         }
-        
+
     }
 
     public void StartSkillEffect()
     {
-       
-        if(castSkil==SkillType.HolyBolt)
+
+        if (castSkil == SkillType.HolyBolt)
         {
             Instantiate(holyBoltEffect, transform);
         }
@@ -620,32 +626,66 @@ public class Player : MonoBehaviour ,IBattle
         }
     }
 
-    private float hp = 200;
-    private float maxhp = 200;
+    private float hp = 200.0f;
+    private float maxhp = 200.0f;
+
+    private float mp = 100.0f;
+    private float maxMp = 100.0f;
     public float Hp
     {
-        get => hp; 
+        get => hp;
         set
         {
-            hp = Mathf.Clamp( value,0,maxhp);
+            hp = Mathf.Clamp(value, 0, maxhp);
 
             Debug.Log($"{hp}/{maxhp}");
-            onHealthChangePlayer?.Invoke(hp/maxhp);
+            onHealthChangePlayer?.Invoke(hp / maxhp);
         }
     }
     public float maxHp
     {
-        get => maxhp; 
+        get => maxhp;
         set
         {
             maxhp = value;
         }
     }
+
+    public float Mp
+    {
+        get => mp;
+        set
+        {
+            mp = Mathf.Clamp(value, 0, maxMp);
+
+            Debug.Log($"{mp}/{maxMp}");
+            onManaChangePlayer?.Invoke(mp / maxMp);
+        }
+    }
+    public float MaxMp
+    {
+        get => maxMp;
+        set
+        {
+            maxMp = value;
+        }
+    }
     public Action<float> onHealthChangePlayer { get; set; }
+    public Action<float> onManaChangePlayer { get; set; }
 
     public void TakeDamage(float damage)
     {
         
+    }
+
+    public void TakeHeal(float heal)
+    {
+        Hp += heal;
+    }
+
+    public void TakeMana(float mana)
+    {
+        Mp += mana;
     }
 
     IEnumerator SkillPrayer()
