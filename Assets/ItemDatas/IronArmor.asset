@@ -19,3 +19,8 @@ MonoBehaviour:
   itemPrefab: {fileID: 7312197946636707060, guid: d74c62281c5532643ab8576ff26efca5, type: 3}
   itemID: 2
   equipType: 2
+  equipItem: {fileID: 0}
+  leftHandRotation: {x: 0, y: 0, z: 0}
+  rightHandRotation: {x: 0, y: 0, z: 0}
+  weaponType: 0
+  Price: 1000

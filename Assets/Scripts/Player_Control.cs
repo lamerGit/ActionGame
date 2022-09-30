@@ -144,6 +144,8 @@ public class Player_Control : MonoBehaviour
             player.DropItem();
             //isLeftClick = true;
             player.IsLeftClick = true;
+            player.NPCOff();
+
 
             SkillButtonOff();
             
@@ -217,6 +219,10 @@ public class Player_Control : MonoBehaviour
 
             rayTarget = hitItem.transform.gameObject;
             rayTarget.GetComponent<OutlineController>().OutlineOn();
+        }else if(Physics.Raycast(ray,out RaycastHit hitNPC,1000.0f,LayerMask.GetMask("NPC")))
+        {
+            rayTarget = hitNPC.transform.gameObject;
+            rayTarget.GetComponent<NPCController>().On();
         }
         else
         {
@@ -234,6 +240,7 @@ public class Player_Control : MonoBehaviour
 
             OutlineController outlineController = rayTarget.GetComponent<OutlineController>();
             ItemNameController itemNameController = rayTarget.GetComponent<ItemNameController>();
+            NPCController nPCController = rayTarget.GetComponent<NPCController>();
 
             if (outlineController != null)
             {
@@ -245,6 +252,10 @@ public class Player_Control : MonoBehaviour
             if (itemNameController != null)
             {
                 itemNameController.NameOff();
+            }
+            if(nPCController != null)
+            {
+                nPCController.Off();
             }
 
         }

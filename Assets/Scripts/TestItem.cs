@@ -14,6 +14,7 @@ public class TestItem : MonoBehaviour
         ItemFactory.MakeItem(ItemIDCode.Armor, transform.position, true);
         ItemFactory.MakeItem(ItemIDCode.Shield, transform.position, true);
         ItemFactory.MakeItem(ItemIDCode.Potion_Mana, transform.position, true);
+        ItemFactory.MakeItem(ItemIDCode.Gold, transform.position, true);
     }
 
     

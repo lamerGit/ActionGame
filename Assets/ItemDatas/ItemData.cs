@@ -28,4 +28,8 @@ public class ItemData : ScriptableObject
     public Vector3 rightHandRotation; //오른손 장착시 회전
 
     public WeaponType weaponType = WeaponType.None;
+
+    public int Price = 0;
+
+    public bool TypeGold=false;
 }

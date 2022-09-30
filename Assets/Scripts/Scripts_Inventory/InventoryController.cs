@@ -64,10 +64,12 @@ public class InventoryController : MonoBehaviour
     ItemGrid playerItemGrid;
     EquipControl playerEquipControl;
     Player player;
+    InventoryGold playerGold; // 플레이어 골드를 표시해주는 스크립트
 
     ItemGrid tempNPCInventory; // NPC거래용 인벤토리 저장할 변수
     InventoryItem tempNPCItem; // NPC거래용 인벤토리 아이템 변수
     Vector2Int tempNPCPosition; // NPC거래용 인벤토리아이템 원래 위치 저장할 변수
+
     public InventoryItem SelectedItem
     {
         get { return selectedItem; }
@@ -83,6 +85,13 @@ public class InventoryController : MonoBehaviour
         playerItemGrid=playerInventory.GetComponent<ItemGrid>();
         player = FindObjectOfType<Player>();
         buyQustion = FindObjectOfType<BuyQustion>();
+        playerGold=FindObjectOfType<InventoryGold>();
+        playerItemGrid.onChangeGold += (gold) =>
+        {
+            playerGold.GoldChange(gold);
+        };
+
+        playerItemGrid.Gold = 0;
         
     }
 
@@ -112,6 +121,12 @@ public class InventoryController : MonoBehaviour
         buyQustion.YesButton.onClick.AddListener(BuyOk);
         buyQustion.NoButton.onClick.AddListener(BuyCancel);
         buyQustion.gameObject.SetActive(false);
+
+        for(int i=0; i<20; i++)
+        {
+            
+        }
+
     }
     private void OnInventoryOnOff(InputAction.CallbackContext obj)
     {
@@ -133,6 +148,13 @@ public class InventoryController : MonoBehaviour
 
     }
 
+    public void OnOffInventory()
+    {
+        playerInventory.OnInventory();
+        playerEquipControl.OnInventory();
+        
+    }
+
     private void OnCreateItem(InputAction.CallbackContext obj)
     {
         //들고있는 아이템이 없을때만 q를 눌렀을때 아이템생성
@@ -140,6 +162,7 @@ public class InventoryController : MonoBehaviour
         {
             CreateRandomItem();
         }
+        
     }
 
     private void OnCreateEmptyItem(InputAction.CallbackContext obj)
@@ -290,6 +313,31 @@ public class InventoryController : MonoBehaviour
         InsertItem(itemToInsert);
     }
 
+    public void InsertRandomItem(ItemGrid temp,ItemIDCode item)
+    {
+        if(temp==null)
+        {
+            return;
+        }
+        if (selectedItem != null)
+        {
+            return;
+        }
+
+        CreateRandomItem((uint)item);
+        InventoryItem itemToInsert = selectedItem;
+        Vector2Int? posOnGrid = temp.FindSpaceforObject(itemToInsert);
+        if (posOnGrid == null)
+        {
+            Destroy(selectedItem.gameObject);
+            return;
+        }
+        selectedItem = null;
+        InsertItem(itemToInsert,temp);
+    }
+
+
+
     /// <summary>
     /// 아이템을 인벤토리에 넣는 함수,
     /// Nullable Type으로 만든 FindSpaceforObject함수로 인벤토리 안에 들어갈 수 있는지 확인하고
@@ -387,9 +435,28 @@ public class InventoryController : MonoBehaviour
         rectTransform.SetAsLastSibling();
 
         //int selectedItemID=UnityEngine.Random.Range(0,items.Count);
-        int selectedItemID=UnityEngine.Random.Range(0,DataManager.Instance.Items.Length);
+        int selectedItemID=UnityEngine.Random.Range(0,DataManager.Instance.Items.Length-1);
         //inventoryItem.Set(items[selectedItemID]);
         inventoryItem.Set(DataManager.Instance.Items[selectedItemID]);
+
+
+    }
+
+    private void CreateRandomItem(uint itemCode)
+    {
+        InventoryItem inventoryItem = Instantiate(itemPrefab).GetComponent<InventoryItem>();
+        selectedItem = inventoryItem;
+
+
+
+        rectTransform = inventoryItem.GetComponent<RectTransform>();
+        rectTransform.SetParent(canvasTransform);
+        rectTransform.SetAsLastSibling();
+
+        //int selectedItemID=UnityEngine.Random.Range(0,items.Count);
+        //int selectedItemID = UnityEngine.Random.Range(0, DataManager.Instance.Items.Length - 1);
+        //inventoryItem.Set(items[selectedItemID]);
+        inventoryItem.Set(DataManager.Instance.Items[itemCode]);
 
 
     }
@@ -490,6 +557,7 @@ public class InventoryController : MonoBehaviour
                 if(tempNPCItem != null) // 아이템이 있다면 살건지 안살건지 물어보는 창을 연다.
                 {
                     buyQustion.gameObject.SetActive(true);
+                    buyQustion.infoSet(tempNPCItem.itemData);
                     buyQustion.gameObject.GetComponent<RectTransform>().position = Mouse.current.position.ReadValue();
                 }
 
@@ -508,15 +576,18 @@ public class InventoryController : MonoBehaviour
         {
             if (selectedItemGrid.type == InventoryType.NPC) //선택한 인벤토리 주인이 NPC일때
             {
-
+                //아이템 팔기
                 Vector2Int? posOnGrid = selectedItemGrid.FindSpaceforObject(selectedItem);
 
                 if(posOnGrid!=null)
                 {
+                    playerItemGrid.Gold += selectedItem.itemData.Price;
+
                     InsertItem(selectedItem);
                     selectedItem = null;
                 }else
                 {
+                    playerItemGrid.Gold += selectedItem.itemData.Price;
                     Destroy(selectedItem.gameObject);
                     selectedItem = null;
                 }
@@ -527,7 +598,8 @@ public class InventoryController : MonoBehaviour
             }
             else if(selectedItemGrid.type==InventoryType.Player)
             {
-                //Debug.Log("Player");
+                //아이템 바꾸기
+               
                 Vector2Int tileGridPosition = GetTileGridPosition();
                 PlaceItem(tileGridPosition);
             }
@@ -730,13 +802,24 @@ public class InventoryController : MonoBehaviour
         Vector2Int? posOnGrid = playerItemGrid.FindSpaceforObject(tempNPCItem); // 플레이어 인벤토리에 자리가 있는지 본다.
         if (posOnGrid != null) //자리가 있을때
         {
-            tempNPCItem = tempNPCInventory.PickUpItem(tempNPCPosition.x, tempNPCPosition.y); //자리가 있으면 인벤토리정보에서 뺀다. 
-            InsertItem(tempNPCItem, playerItemGrid); // 플레이어 인벤토리에 넘겨주기
-            buyQustion.gameObject.SetActive(false);
-            //Destroy(tempNPCItem.gameObject);
-            tempNPCInventory = null;
-            tempNPCItem = null;
-            tempNPCPosition = Vector2Int.zero;
+            if(tempNPCItem.itemData.Price>playerItemGrid.Gold) //돈이 없을때
+            {
+                buyFailButton.gameObject.SetActive(true);
+                buyQustion.gameObject.SetActive(false);
+            }else
+            {
+                playerItemGrid.Gold -= tempNPCItem.itemData.Price;
+                tempNPCItem = tempNPCInventory.PickUpItem(tempNPCPosition.x, tempNPCPosition.y); //자리가 있으면 인벤토리정보에서 뺀다. 
+                InsertItem(tempNPCItem, playerItemGrid); // 플레이어 인벤토리에 넘겨주기
+                buyQustion.gameObject.SetActive(false);
+                //Destroy(tempNPCItem.gameObject);
+                tempNPCInventory = null;
+                tempNPCItem = null;
+                tempNPCPosition = Vector2Int.zero;
+            }
+
+
+            
 
         }
         else  //자리가 없을때

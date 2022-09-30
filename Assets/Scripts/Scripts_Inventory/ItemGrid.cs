@@ -20,6 +20,18 @@ public class ItemGrid : MonoBehaviour
     [SerializeField] int gridSizeWidth=20; //인벤토리 전체크기를 정할 가로 변수
     [SerializeField] int gridSizeHeight=10; // 인벤토리 전체크기를 정할 세로 변수
 
+    int gold = 0; //골드를 저장할 변수
+
+    public int Gold
+    {
+        get { return gold; }
+        set { gold = value; 
+        onChangeGold?.Invoke(gold);
+        
+        }
+    }
+
+
 
     /// <summary>
     /// RectTransform컴포넌트를 찾고 Init함수를 통해 gridSizeWidth*gridSizeHeight 사이즈의 인벤토리 생성
@@ -382,4 +394,7 @@ public class ItemGrid : MonoBehaviour
 
         return true;
     }
+
+    public Action<int> onChangeGold { get; set; }
+
 }

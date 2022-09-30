@@ -6,11 +6,12 @@ using TMPro;
 public class DetailInfo : MonoBehaviour
 {
     TextMeshProUGUI itemName;
-    
+    TextMeshProUGUI itemPrice;
+
     private void Awake()
     {
         itemName = transform.Find("info_ItemName").GetComponent<TextMeshProUGUI>();
-      
+        itemPrice = transform.Find("info_Price").GetComponent<TextMeshProUGUI>();
     }
 
     private void Start()
@@ -32,6 +33,7 @@ public class DetailInfo : MonoBehaviour
 
     public void InfoSet(InventoryItem inventoryItem)
     {
-        itemName.text = inventoryItem.itemName;  
+        itemName.text = inventoryItem.itemName;
+        itemPrice.text = $"{inventoryItem.itemData.Price}¿ø";
     }
 }

@@ -166,6 +166,8 @@ public class Player : MonoBehaviour, IBattle
     InventoryItem armor;
     InventoryItem rightHand;
 
+    NPCController targetNPC; // 현재 어떤 NPC의 인벤토리가 열렸는지 확인할 변수
+
     public InventoryItem LeftHand
     {
         get { return leftHand; }
@@ -308,12 +310,21 @@ public class Player : MonoBehaviour, IBattle
 
         if (d < pickUpRange * pickUpRange)
         {
-            if (inventoryController.PickUpItem(itemdata.itemID, playerInventory))
+
+            if (itemdata.TypeGold)
             {
-
+                playerInventory.Gold = itemdata.Price;
                 Destroy(t);
+            }
+            else
+            {
+                if (inventoryController.PickUpItem(itemdata.itemID, playerInventory))
+                {
+
+                    Destroy(t);
 
 
+                }
             }
         }
     }
@@ -349,16 +360,26 @@ public class Player : MonoBehaviour, IBattle
                 if (Target.layer == LayerMask.NameToLayer("Item"))
                 {
                     PickUpItem(Target);
+                    agent.ResetPath();
                     Target = null;
                     return;
                 }
                 if (Target.layer == LayerMask.NameToLayer("ItemName"))
                 {
                     PickUpItem(Target.transform.root.gameObject);
+                    agent.ResetPath();
                     Target = null;
                     return;
                 }
-
+                if(Target.layer==LayerMask.NameToLayer("NPC"))
+                {
+                    targetNPC= Target.GetComponent<NPCController>();
+                    targetNPC.InventoryOn();
+                    inventoryController.OnOffInventory();
+                    agent.ResetPath();
+                    Target = null;
+                    return;
+                }
 
 
             }
@@ -736,5 +757,16 @@ public class Player : MonoBehaviour, IBattle
 
             yield return new WaitForSeconds(2.0f);
         }
+    }
+
+
+    public void NPCOff()
+    {
+        if(targetNPC!=null)
+        {
+            targetNPC.InventoryOff();
+            targetNPC = null;
+        }
+
     }
 }

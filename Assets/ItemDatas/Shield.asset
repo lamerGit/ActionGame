@@ -23,3 +23,4 @@ MonoBehaviour:
   leftHandRotation: {x: 0, y: -90, z: -90}
   rightHandRotation: {x: 0, y: 0, z: 0}
   weaponType: 1
+  Price: 700

@@ -9,7 +9,8 @@ public enum ItemIDCode
     Armor,
     Potion,
     Shield,
-    Potion_Mana
+    Potion_Mana,
+    Gold
 }
 
 public enum EquipType
