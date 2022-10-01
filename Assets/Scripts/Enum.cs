@@ -47,7 +47,8 @@ public enum WeaponType
 {
     None=0,
     Shield,
-    Sword
+    Sword,
+    Armor
 }
 
 public enum MonsterType

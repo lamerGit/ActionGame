@@ -24,3 +24,6 @@ MonoBehaviour:
   rightHandRotation: {x: 0, y: 0, z: 0}
   weaponType: 2
   Price: 2000
+  TypeGold: 0
+  damage: 30
+  defance: 0

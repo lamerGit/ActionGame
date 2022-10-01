@@ -32,4 +32,7 @@ public class ItemData : ScriptableObject
     public int Price = 0;
 
     public bool TypeGold=false;
+
+    public float damage = 0;
+    public float defance = 0;
 }

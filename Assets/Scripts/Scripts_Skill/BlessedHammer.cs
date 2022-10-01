@@ -11,6 +11,7 @@ public class BlessedHammer : MonoBehaviour
 
     float timer = 0.001f;
 
+    public float skillDamage = 10.0f;
     private void Start()
     {
         point = Spiral(transform.position, 10.0f, 500, 5);
@@ -50,7 +51,7 @@ public class BlessedHammer : MonoBehaviour
         if(other.CompareTag("Enemy"))
         {
             IBattle enemy=other.GetComponent<IBattle>();
-            enemy.TakeDamage(10.0f);
+            enemy.TakeDamage(skillDamage);
         }
     }
 

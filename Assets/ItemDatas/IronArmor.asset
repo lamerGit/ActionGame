@@ -22,5 +22,8 @@ MonoBehaviour:
   equipItem: {fileID: 0}
   leftHandRotation: {x: 0, y: 0, z: 0}
   rightHandRotation: {x: 0, y: 0, z: 0}
-  weaponType: 0
+  weaponType: 3
   Price: 1000
+  TypeGold: 0
+  damage: 0
+  defance: 20

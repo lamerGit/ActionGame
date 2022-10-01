@@ -11,5 +11,7 @@ public class MonsterData : ScriptableObject
 
     public float minHP;
     public float maxHP;
+
+    public float damage = 0;
     
 }

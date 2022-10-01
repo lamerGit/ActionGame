@@ -56,6 +56,9 @@ public class EquipSlot : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
                     {
                         player.RightHand = null;
                     }
+                }else if(beforWeaponType==WeaponType.Armor)
+                {
+                    player.Armor = null;
                 }
 
                 slotImage.gameObject.SetActive(true);
@@ -78,6 +81,9 @@ public class EquipSlot : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
                             player.LeftHand = slotItem;
                         }
                     }
+                }else if(slotItem.itemData.weaponType == WeaponType.Armor)
+                {
+                    player.Armor= slotItem;
                 }
 
                 slotImage.gameObject.SetActive(false);

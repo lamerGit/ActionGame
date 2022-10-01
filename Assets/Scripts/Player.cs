@@ -168,13 +168,40 @@ public class Player : MonoBehaviour, IBattle
 
     NPCController targetNPC; // «ˆ¿Á æÓ∂≤ NPC¿« ¿Œ∫•≈‰∏Æ∞° ø≠∑»¥¬¡ˆ »Æ¿Œ«“ ∫Øºˆ
 
+    public InventoryItem Armor
+    {
+        get { return armor; }
+        set
+        {
+            if(armor!=null)
+            {
+                defence -= armor.itemData.defance;
+                Debug.Log("∞©ø  æ¯æÓ¡¸ µ∆ÊΩ∫«œ∂Ù");
+            }
+
+            armor = value;
+            if (armor != null)
+            {
+                defence += armor.itemData.defance;
+                Debug.Log("∞©ø  ¿Â¬¯ µ∆ÊΩ∫ªÛΩ¬");
+            }
+        }
+    }
+
+
     public InventoryItem LeftHand
     {
         get { return leftHand; }
         set
         {
+           
             if (leftHand != null)
             {
+                attackpower -= leftHand.itemData.damage;
+                defence -= leftHand.itemData.defance;
+
+                Debug.Log("øﬁº’æ∆¿Ã≈€ «ÿ¡¶");
+
                 GameObject temp = findPlayerLeftHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
             }
@@ -188,6 +215,12 @@ public class Player : MonoBehaviour, IBattle
                 animator.runtimeAnimatorController = animeType[(int)Motion.NoWeapon];
             } else
             {
+                attackpower += leftHand.itemData.damage;
+                defence += leftHand.itemData.defance;
+
+                Debug.Log("øﬁº’æ∆¿Ã≈€ ¿Â¬¯");
+
+
                 GameObject temp = Instantiate(leftHand.itemData.equipItem, findPlayerLeftHand.gameObject.transform);
                 temp.transform.localPosition = new(0, 0, 0);
                 temp.transform.localRotation = Quaternion.Euler(leftHand.itemData.leftHandRotation);
@@ -210,8 +243,15 @@ public class Player : MonoBehaviour, IBattle
         get { return rightHand; }
         set
         {
+            
             if (rightHand != null)
             {
+                attackpower -= rightHand.itemData.damage;
+                defence -= rightHand.itemData.defance;
+
+                Debug.Log("ø¿∏•º’æ∆¿Ã≈€ «ÿ¡¶");
+
+
                 GameObject temp = findPlayerRightHand.gameObject.transform.GetChild(0).gameObject;
                 Destroy(temp);
             }
@@ -223,6 +263,12 @@ public class Player : MonoBehaviour, IBattle
                 Destroy(temp);
             } else
             {
+                attackpower += rightHand.itemData.damage;
+                defence += rightHand.itemData.defance;
+
+                Debug.Log("ø¿∏•º’æ∆¿Ã≈€ ¿Â¬¯");
+
+
                 GameObject temp = Instantiate(rightHand.itemData.equipItem, findPlayerRightHand.gameObject.transform);
                 temp.transform.localPosition = new(0, 0, 0);
                 temp.transform.localRotation = Quaternion.Euler(rightHand.itemData.rightHandRotation);
@@ -232,8 +278,8 @@ public class Player : MonoBehaviour, IBattle
         }
     }
 
-    float power = 20.0f;
-    float denfence = 1.0f;
+    public float attackpower = 1.0f;
+    public float defence = 1.0f;
 
     FindPlayerLeftHand findPlayerLeftHand;
     FindPlayerRightHand findPlayerRightHand;
@@ -591,7 +637,7 @@ public class Player : MonoBehaviour, IBattle
         animator.SetBool("Attack", isAttack);
         if (targetInterface != null)
         {
-            targetInterface.TakeDamage(power);
+            targetInterface.TakeDamage(attackpower);
             targetInterface = null;
         }
     }
@@ -602,13 +648,14 @@ public class Player : MonoBehaviour, IBattle
 
         if (castSkil == SkillType.HolyBolt)
         {
-            Instantiate(holyBolt, transform.position + transform.forward + transform.up, transform.rotation);
+            HolyBolt skill = Instantiate(holyBolt, transform.position + transform.forward + transform.up, transform.rotation).GetComponent<HolyBolt>();
+            skill.skillDamge += attackpower;
         }
 
         if (castSkil == SkillType.BlessedHammer)
         {
-            Instantiate(blessdHammer, transform.position + Vector3.forward + Vector3.up + Vector3.left, Quaternion.identity);
-            //temp.GetComponent<BlessedHammer>().SetSpiral(transform.position+Vector3.forward+Vector3.up);
+            BlessedHammer skill= Instantiate(blessdHammer, transform.position + Vector3.forward + Vector3.up + Vector3.left, Quaternion.identity).GetComponent<BlessedHammer>();
+            skill.skillDamage += attackpower;
         }
 
     }
@@ -630,7 +677,7 @@ public class Player : MonoBehaviour, IBattle
         animator.SetInteger("TwinAttack", 1);
         if (targetInterface != null)
         {
-            targetInterface.TakeDamage(power);
+            targetInterface.TakeDamage(attackpower);
             targetInterface = null;
         }
     }
@@ -642,7 +689,7 @@ public class Player : MonoBehaviour, IBattle
         animator.SetInteger("TwinAttack", 0);
         if (targetInterface != null)
         {
-            targetInterface.TakeDamage(power);
+            targetInterface.TakeDamage(attackpower);
             targetInterface = null;
         }
     }
@@ -696,6 +743,14 @@ public class Player : MonoBehaviour, IBattle
 
     public void TakeDamage(float damage)
     {
+        float finalDamage = damage - defence;
+        if(finalDamage<0)
+        {
+            Hp -= 1;
+        }else
+        {
+            Hp -= finalDamage;
+        }
         
     }
 
@@ -733,10 +788,10 @@ public class Player : MonoBehaviour, IBattle
     {
         if(onOff)
         {
-            power += 20.0f;
+            attackpower += 20.0f;
         }else
         {
-            power -= 20.0f;
+            attackpower -= 20.0f;
         }
     }
 
@@ -751,7 +806,7 @@ public class Player : MonoBehaviour, IBattle
                 {
                     Instantiate(holyFire,enemy.transform.position,Quaternion.identity);
                     IBattle battle = enemy.gameObject.GetComponent<IBattle>();
-                    battle.TakeDamage(20.0f);
+                    battle.TakeDamage(attackpower/2);
                 }
             }
 

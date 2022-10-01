@@ -15,4 +15,5 @@ MonoBehaviour:
   monsterName: "\uAC00\uC2DC\uB9C8\uADC0"
   monsterType: 0
   minHP: 100
-  maxHP: 300
+  maxHP: 250
+  damage: 20

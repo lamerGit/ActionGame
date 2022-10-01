@@ -33,6 +33,13 @@ public class MonsterHpBarController : MonoBehaviour
         if(enemy.monsterData.monsterType==MonsterType.beast)
         {
             monsterType.text = "야수";
+        }else if(enemy.monsterData.monsterType == MonsterType.undead)
+        {
+            monsterType.text = "언데드";
+        }
+        else if(enemy.monsterData.monsterType == MonsterType.demon)
+        {
+            monsterType.text = "악마";
         }
         gameObject.SetActive(true);
     }

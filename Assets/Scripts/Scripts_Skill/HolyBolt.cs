@@ -5,6 +5,7 @@ using UnityEngine;
 public class HolyBolt : MonoBehaviour
 {
     Rigidbody rigid;
+    public float skillDamge = 20.0f;
 
     private void Awake()
     {
@@ -28,7 +29,7 @@ public class HolyBolt : MonoBehaviour
         if(other.CompareTag("Enemy"))
         {
             IBattle enemy=other.GetComponent<IBattle>();
-            enemy.TakeDamage(20.0f);
+            enemy.TakeDamage(skillDamge);
         }
     }
 }

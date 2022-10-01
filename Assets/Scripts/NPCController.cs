@@ -7,7 +7,7 @@ public class NPCController : MonoBehaviour
     public GameObject myInventory;
     OutlineController outlineController;
     GameObject myName;
-    public ItemGrid NPCItemGrid;
+    ItemGrid NPCItemGrid;
 
     InventoryController inventoryController;
 

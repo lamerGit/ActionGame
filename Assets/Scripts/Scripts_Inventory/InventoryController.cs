@@ -85,14 +85,8 @@ public class InventoryController : MonoBehaviour
         playerItemGrid=playerInventory.GetComponent<ItemGrid>();
         player = FindObjectOfType<Player>();
         buyQustion = FindObjectOfType<BuyQustion>();
-        playerGold=FindObjectOfType<InventoryGold>();
-        playerItemGrid.onChangeGold += (gold) =>
-        {
-            playerGold.GoldChange(gold);
-        };
-
-        playerItemGrid.Gold = 0;
         
+
     }
 
     private void OnEnable()
@@ -121,11 +115,14 @@ public class InventoryController : MonoBehaviour
         buyQustion.YesButton.onClick.AddListener(BuyOk);
         buyQustion.NoButton.onClick.AddListener(BuyCancel);
         buyQustion.gameObject.SetActive(false);
-
-        for(int i=0; i<20; i++)
+        playerGold = FindObjectOfType<InventoryGold>();
+        playerItemGrid.onChangeGold += (gold) =>
         {
-            
-        }
+            playerGold.GoldChange(gold);
+        };
+
+        playerItemGrid.Gold = 0;
+
 
     }
     private void OnInventoryOnOff(InputAction.CallbackContext obj)
@@ -660,13 +657,13 @@ public class InventoryController : MonoBehaviour
                 }else //실드가 있을때
                 {
                     //현재슬롯에 실드이면 있으면 장비스왑
-                    if(selectedEquipSlot.SlotItem.itemData.weaponType==WeaponType.Shield)
+                    if (selectedEquipSlot.SlotItem.itemData.weaponType == WeaponType.Shield)
                     {
-                        if(selectedEquipSlot.PlaceItem(selectedItem))
+                        if (selectedEquipSlot.PlaceItem(selectedItem))
                         {
                             EquipSlotPlaceItem(tempSlotItem);
                         }
-                    }else
+                    } else if (selectedEquipSlot.SlotItem.itemData.weaponType != WeaponType.Armor && selectedItem.itemData.weaponType==WeaponType.Shield)
                     {
                         //현재슬롯이 실드가 아니라면 장비를 스왑하고 다른칸에 있는 아이템은 인벤토리로 간다.
                         if(selectedEquipSlot.PlaceItem(selectedItem))
