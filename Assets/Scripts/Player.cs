@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,8 +9,7 @@ public class Player : MonoBehaviour, IBattle
 
     NavMeshAgent agent;
 
-    public AnimatorController[] animeType;
-
+    public AnimatorOverrideController[] animeType;
     public float turnSpeed = 30.0f;
     public float moveSpeed = 10.0f;
 
@@ -217,6 +215,7 @@ public class Player : MonoBehaviour, IBattle
                 Destroy(temp);
 
                 animator.runtimeAnimatorController = animeType[(int)Motion.NoWeapon];
+
             } else
             {
                 attackpower += leftHand.itemData.damage;
@@ -231,10 +230,14 @@ public class Player : MonoBehaviour, IBattle
 
                 if (leftHand.itemData.weaponType == WeaponType.Shield)
                 {
+
                     animator.runtimeAnimatorController = animeType[(int)Motion.SwordAndShield];
+
                 } else if (leftHand.itemData.weaponType == WeaponType.Sword)
                 {
+
                     animator.runtimeAnimatorController = animeType[(int)Motion.TwinSword];
+
                 }
 
             }
