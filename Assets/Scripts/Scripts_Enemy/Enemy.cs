@@ -52,7 +52,7 @@ public class Enemy : MonoBehaviour, IBattle
     {
         if (!isDead)
         {
-            Debug.Log($"{monsterData.name}이가 {damage}를 받았습니다");
+            //Debug.Log($"{monsterData.name}이가 {damage}를 받았습니다");
             Hp -= damage;
             Debug.Log($"{hp}/{maxHp}");
             if (Hp < 0.1f)
@@ -60,6 +60,7 @@ public class Enemy : MonoBehaviour, IBattle
                 isDead = true;
                 animator.SetTrigger("Die");
                 myCollider.enabled = false;
+                agent.ResetPath();
                 StartCoroutine(Del());
             }
         }

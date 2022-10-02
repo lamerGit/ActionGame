@@ -15,6 +15,6 @@ MonoBehaviour:
   damage: 15
   range: 30
   targetType: 0
-  mana: 0
+  mana: 5
   reauiredLevel: 0
   damagePerLevel: 0

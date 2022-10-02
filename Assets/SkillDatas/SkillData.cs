@@ -8,7 +8,7 @@ public class SkillData : ScriptableObject
     public float damage;
     public float range;
     public bool targetType;
-    public float mana;
+    public float mana; //필요마나
     public int reauiredLevel; //필요레벨
     public float damagePerLevel; //레벨당 더해지는 데미지
 

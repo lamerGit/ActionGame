@@ -44,6 +44,7 @@ public class Player_Control : MonoBehaviour
     private void Start()
     {
         player = GetComponent<Player>();
+        player.playerDead += InputOff;
         
     }
 
@@ -266,7 +267,15 @@ public class Player_Control : MonoBehaviour
     {
         if(rayTarget!=null)
         {
+            OutlineController outlineController = rayTarget.GetComponent<OutlineController>();
             ItemNameController itemNameController = rayTarget.GetComponent<ItemNameController>();
+            if (outlineController != null)
+            {
+
+                outlineController.OutlineOff();
+
+            }
+
             if (itemNameController != null)
             {
                 itemNameController.NameOff();
@@ -302,6 +311,11 @@ public class Player_Control : MonoBehaviour
     {
         skillButtons[0].SubButtonOff();
         skillButtons[1].SubButtonOff();
+    }
+
+    void InputOff()
+    {
+        inputActions.Disable();
     }
 
 }

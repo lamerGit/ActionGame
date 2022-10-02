@@ -20,7 +20,7 @@ public class SpikeFiend : Enemy
             Collider[] hitPlayer = Physics.OverlapSphere(transform.position, 15.0f, LayerMask.GetMask("Player"));
             if (hitPlayer.Length > 0)
             {
-                Debug.Log("플레이어가 범위 안에 있다");
+                //Debug.Log("플레이어가 범위 안에 있다");
                 transform.LookAt(hitPlayer[0].transform.position);
                 animator.SetTrigger("Attack");
             }

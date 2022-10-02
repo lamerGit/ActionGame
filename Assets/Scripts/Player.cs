@@ -21,6 +21,8 @@ public class Player : MonoBehaviour, IBattle
     public GameObject blessdHammer;
     public GameObject holyFire;
 
+    public GameObject deadMessage;
+
     GameObject payerObj;
     GameObject vigorObj;
     GameObject mightObj;
@@ -36,6 +38,8 @@ public class Player : MonoBehaviour, IBattle
     bool targetOn = false;
     bool isRightClick = false;
     bool auraSkill = false;
+
+    bool isDead = false;
 
     float MoveSpeed
     {
@@ -160,7 +164,7 @@ public class Player : MonoBehaviour, IBattle
 
     Player_Skill player_Skill;
 
-    int Level = 1;
+    //int Level = 1;
 
     InventoryItem leftHand;
     InventoryItem armor;
@@ -295,12 +299,42 @@ public class Player : MonoBehaviour, IBattle
         get { return target; }
         set
         {
+            //if(target!= null)
+            //{
+               
+            //        OutlineController outlineController = target.GetComponent<OutlineController>();
+            //        ItemNameController itemNameController = target.GetComponent<ItemNameController>();
+            //        NPCController nPCController = target.GetComponent<NPCController>();
+
+            //        if (outlineController != null)
+            //        {
+
+            //            outlineController.OutlineOff();
+
+            //        }
+
+            //        if (itemNameController != null)
+            //        {
+            //            itemNameController.NameOff();
+            //        }
+            //        if (nPCController != null)
+            //        {
+            //            nPCController.Off();
+            //        }
+
+                
+            //}
+               
+            
+
 
             target = value;
-
-
         }
+
+
+        
     }
+
 
 
     private void Awake()
@@ -578,20 +612,28 @@ public class Player : MonoBehaviour, IBattle
     private void SkillHolyBolt()
     {
         castSkil = SkillType.HolyBolt;
+        if (Mp >= player_Skill.skillDatas[(int)castSkil].mana)
+        {
+            isAttack = true;
+            animator.SetBool("Skill", isAttack);
+        }
         isMoving = false;
         animator.SetBool("isMove", isMoving);
-        isAttack = true;
-        animator.SetBool("Skill", isAttack);
         agent.ResetPath();
     }
 
     private void SkillBlessedHammer()
     {
         castSkil = SkillType.BlessedHammer;
+        if (Mp >= player_Skill.skillDatas[(int)castSkil].mana)
+        {
+            
+            isAttack = true;
+            animator.SetBool("Skill", isAttack);
+          
+        }
         isMoving = false;
         animator.SetBool("isMove", isMoving);
-        isAttack = true;
-        animator.SetBool("Skill", isAttack);
         agent.ResetPath();
     }
 
@@ -648,12 +690,14 @@ public class Player : MonoBehaviour, IBattle
 
         if (castSkil == SkillType.HolyBolt)
         {
+            Mp -= player_Skill.skillDatas[(int)castSkil].mana;
             HolyBolt skill = Instantiate(holyBolt, transform.position + transform.forward + transform.up, transform.rotation).GetComponent<HolyBolt>();
             skill.skillDamge += attackpower;
         }
 
         if (castSkil == SkillType.BlessedHammer)
         {
+            Mp -= player_Skill.skillDatas[(int)castSkil].mana;
             BlessedHammer skill= Instantiate(blessdHammer, transform.position + Vector3.forward + Vector3.up + Vector3.left, Quaternion.identity).GetComponent<BlessedHammer>();
             skill.skillDamage += attackpower;
         }
@@ -708,6 +752,13 @@ public class Player : MonoBehaviour, IBattle
 
             Debug.Log($"{hp}/{maxhp}");
             onHealthChangePlayer?.Invoke(hp / maxhp);
+
+            if(hp<0.1f)
+            {
+                Die();
+            }
+
+
         }
     }
     public float maxHp
@@ -726,7 +777,7 @@ public class Player : MonoBehaviour, IBattle
         {
             mp = Mathf.Clamp(value, 0, maxMp);
 
-            Debug.Log($"{mp}/{maxMp}");
+            //Debug.Log($"{mp}/{maxMp}");
             onManaChangePlayer?.Invoke(mp / maxMp);
         }
     }
@@ -824,4 +875,18 @@ public class Player : MonoBehaviour, IBattle
         }
 
     }
+
+    void Die()
+    {
+        if (!isDead)
+        {
+            deadMessage.SetActive(true);
+            isDead = true;
+            animator.SetTrigger("Die");
+            gameObject.layer = LayerMask.NameToLayer("Default");
+            playerDead?.Invoke();
+        }
+    }
+
+    public Action playerDead { get; set; }
 }

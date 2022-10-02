@@ -89,6 +89,7 @@ public class Zombie : Enemy
         {
             IBattle battle = targetPlayer.GetComponent<IBattle>();
             battle.TakeDamage(monsterData.damage);
+            targetPlayer = null;
 
         }
     }
